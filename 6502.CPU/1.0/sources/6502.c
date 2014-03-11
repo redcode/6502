@@ -104,19 +104,18 @@ Q_INLINE void write_16bit(M6502 *object, quint16 address, quint16 value)
 
 Q_INLINE void push_16bit(M6502 *object, quint16 value)
 	{
-	WRITE_8(Q_6502_ADDRESS_STACK | S--, value >> 8);
-	WRITE_8(Q_6502_ADDRESS_STACK | S--, (quint8)value);
+	WRITE_8(Q_6502_ADDRESS_STACK | S, value >> 8);
+	WRITE_8(Q_6502_ADDRESS_STACK | (quint8)(S - 1), (quint8)value);
+	S -= 2;
 	}
 
 Q_INLINE quint16 pop_16bit(M6502 *object)
 	{
-	quint16 result;
+	quint16 result =
+	  READ_8(Q_6502_ADDRESS_STACK | (quint8)(S + 1)) |
+	((READ_8(Q_6502_ADDRESS_STACK | (quint8)(S + 2))) << 8);
 
-	S++;
-	result = READ_8(Q_6502_ADDRESS_STACK | S);
-	S++;
-	result |= (((quint16)READ_8(Q_6502_ADDRESS_STACK | S)) << 8);
-
+	S += 2;
 	return result;
 	}
 

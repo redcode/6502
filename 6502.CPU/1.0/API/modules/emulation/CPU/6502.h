@@ -4,14 +4,14 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999 Manuel Sainz de Baranda y Goñi.
+Copyright © 2009 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
 #include <Q/hardware/CPU/architecture/650x.h>
 #include <Q/types/generic functions.h>
 
-#ifndef __6502_H__
-#define __6502_H__
+#ifndef __modules_emulation_CPU_6502_H__
+#define __modules_emulation_CPU_6502_H__
 
 typedef struct {
 	Q6502State state;
@@ -49,4 +49,4 @@ void  m6502_irq	  (M6502*   object,
 }
 #endif
 
-#endif /* __6502_H__ */
+#endif /* __modules_emulation_CPU_6502_H__ */
