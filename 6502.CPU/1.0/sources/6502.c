@@ -220,7 +220,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-static ReadEA j_table[8] = {
+static const ReadEA j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -231,7 +231,7 @@ static ReadEA j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-static WriteEA k_table[8] = {
+static const WriteEA k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -269,7 +269,7 @@ static WriteEA k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-static ReadEA g_table[8] = {
+static const ReadEA g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -280,7 +280,7 @@ static ReadEA g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-static ReadWriteEA h_table[8] = {
+static const ReadWriteEA h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -316,7 +316,7 @@ static ReadWriteEA h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-static ReadWriteEA q_table[8] = {
+static const ReadWriteEA q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -330,7 +330,7 @@ static ReadWriteEA q_table[8] = {
 
 /* MARK: - Addressing Accessors */
 
-#define SET_EA(type, table) type *ea = &table##_table[(OPCODE & 28) >> 2];
+#define SET_EA(type, table) type const *ea = &table##_table[(OPCODE & 28) >> 2];
 #define J		    SET_EA(ReadEA,	j)
 #define K		    SET_EA(WriteEA,	k)
 #define G		    SET_EA(ReadEA,	g)
