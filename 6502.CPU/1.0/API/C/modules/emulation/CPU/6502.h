@@ -53,8 +53,10 @@ typedef struct {
 	CPU_6502_API void  m6502_irq   (M6502*	 object,
 					qboolean state);
 
-#ifdef __cplusplus
-}
+#	ifdef __cplusplus
+	}
+#	endif
+
 #endif
 
 #endif /* __modules_emulation_CPU_6502_H__ */
