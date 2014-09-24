@@ -28,22 +28,30 @@ typedef struct {
 	} cb;
 } M6502;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef BUILDING_CPU_6502
 
-qsize m6502_run	  (M6502*   object,
-		   qsize    cycles);
+#	ifdef __cplusplus
+	extern "C" {
+#	endif
 
-void  m6502_power (M6502*   object,
-		   qboolean state);
+#	ifdef USING_STATIC_CPU_6502
+#		define CPU_6502_API
+#	else
+#		define CPU_6502_API Q_API
+#	endif
+		
+	CPU_6502_API qsize m6502_run   (M6502*	 object,
+					qsize	 cycles);
 
-void  m6502_reset (M6502*   object);
+	CPU_6502_API void  m6502_power (M6502*	 object,
+					qboolean state);
 
-void  m6502_nmi	  (M6502*   object);
+	CPU_6502_API void  m6502_reset (M6502*	 object);
 
-void  m6502_irq	  (M6502*   object,
-		   qboolean state);
+	CPU_6502_API void  m6502_nmi   (M6502*	 object);
+
+	CPU_6502_API void  m6502_irq   (M6502*	 object,
+					qboolean state);
 
 #ifdef __cplusplus
 }
