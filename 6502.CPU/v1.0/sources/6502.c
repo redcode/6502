@@ -833,9 +833,9 @@ EXPORTED(qsize, run)(M6502 *object, qsize cycles)
 			P |= IP;
 			TICKS += 7;
 
-			#ifdef M6502_AUTOCLEARS_IRQ_LINE
+#			ifdef M6502_AUTOCLEARS_IRQ_LINE
 				IRQ = FALSE;
-			#endif
+#			endif
 
 			continue;
 			}
