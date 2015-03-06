@@ -10,6 +10,7 @@ Released under the terms of the GNU General Public License v3. */
 #define MODULE_NAME   M6502
 #define MODULE_PREFIX m6502_
 #define MODULE_HEADER <modules/emulation/CPU/6502.h>
+#define BUILDING_CPU_6502
 
 #include <Q/configuration/module.h>
 
