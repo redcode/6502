@@ -10,7 +10,6 @@ Released under the terms of the GNU General Public License v3. */
 #define MODULE_NAME   M6502
 #define MODULE_PREFIX m6502_
 #define MODULE_HEADER <modules/emulation/CPU/6502.h>
-#define BUILDING_CPU_6502
 
 #include <Q/configuration/module.h>
 
@@ -43,15 +42,7 @@ Q_INLINE quint16 read_16bit(M6502 *object, quint16 address)
 	{return (READ_8(address + 1) << 8) | READ_8(address);}
 
 
-Q_INLINE void write_16bit(M6502 *object, quint16 address, quint16 value)
-	{
-	WRITE_8(address, (quint8)value);
-	WRITE_8(address + 1, value >> 8);
-	}
-
-
 #define READ_16( address)	   read_16bit (object, address)
-#define WRITE_16(address, value)   write_16bit(object, address, value)
 #define READ_POINTER(pointer_name) READ_16(Q_6502_ADDRESS_##pointer_name##_POINTER)
 
 
