@@ -4,15 +4,10 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999 Manuel Sainz de Baranda y Goñi.
+Copyright © 1999-2015 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#define MODULE_NAME   M6502
-#define MODULE_PREFIX m6502_
-#define MODULE_HEADER <modules/emulation/CPU/6502.h>
-#define BUILDING_CPU_6502
-
-#include <Q/configuration/module.h>
+#include <emulation/CPU/6502.h>
 
 typedef struct {
 	quint8 cycles;
@@ -35,8 +30,16 @@ typedef quint8 (* Instruction)(M6502 *object);
 
 /* MARK: - Macros & Functions: Callback */
 
-#define READ_8(address)		object->cb.read	(object->cb_context, (address))
-#define WRITE_8(address, value)	object->cb.write(object->cb_context, (address), (value))
+#ifdef EMULATION_CPU_6502_NO_SLOTS
+#	define CB_ACTION(name) object->cb.name
+#	define CB_OBJECT(name) object->cb_context
+#else
+#	define CB_ACTION(name) object->cb.name.action
+#	define CB_OBJECT(name) object->cb.name.object
+#endif
+
+#define READ_8(address)		CB_ACTION(read )(CB_OBJECT(read ), (address))
+#define WRITE_8(address, value)	CB_ACTION(write)(CB_OBJECT(write), (address), (value))
 
 
 Q_INLINE quint16 read_16bit(M6502 *object, quint16 address)
@@ -213,7 +216,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-static const ReadEA j_table[8] = {
+Q_PRIVATE const ReadEA j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -224,7 +227,7 @@ static const ReadEA j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-static const WriteEA k_table[8] = {
+Q_PRIVATE const WriteEA k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -262,7 +265,7 @@ static const WriteEA k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-static const ReadEA g_table[8] = {
+Q_PRIVATE const ReadEA g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -273,7 +276,7 @@ static const ReadEA g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-static const ReadWriteEA h_table[8] = {
+Q_PRIVATE const ReadWriteEA h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -309,7 +312,7 @@ static const ReadWriteEA h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-static const ReadWriteEA q_table[8] = {
+Q_PRIVATE const ReadWriteEA q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -381,7 +384,7 @@ static const ReadWriteEA q_table[8] = {
 	return EA_CYCLES;
 
 
-#define INSTRUCTION(name) static quint8 name(M6502 *object)
+#define INSTRUCTION(name) Q_PRIVATE quint8 name(M6502 *object)
 
 
 /* MARK: - Instructions: Load/Store Operations
@@ -762,7 +765,7 @@ INSTRUCTION(illegal) {return 2;}
 
 /* MARK: - Instruction Function Table */
 
-static const Instruction instruction_table[256] = {
+Q_PRIVATE const Instruction instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
@@ -785,7 +788,7 @@ static const Instruction instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
-EXPORTED(qsize, run)(M6502 *object, qsize cycles)
+M6502_API qsize m6502_run(M6502 *object, qsize cycles)
 	{
 	/*------------.
 	| Clear ticks |
@@ -842,11 +845,7 @@ EXPORTED(qsize, run)(M6502 *object, qsize cycles)
 	}
 
 
-EXPORTED(void, nmi)(M6502 *object)		   {NMI = TRUE ;}
-EXPORTED(void, irq)(M6502 *object, qboolean state) {IRQ = state;}
-
-
-EXPORTED(void, reset)(M6502 *object)
+M6502_API void m6502_reset(M6502 *object)
 	{
 	PC = 0; //READ_POINTER(RESET);
 	S = 0xFF;
@@ -858,6 +857,37 @@ EXPORTED(void, reset)(M6502 *object)
 	NMI = FALSE;
 	CYCLES = 0;
 	}
+
+
+M6502_API void m6502_power(M6502 *object, qboolean state) {if (state) m6502_reset(object);}
+M6502_API void m6502_nmi  (M6502 *object)		  {NMI = TRUE ;}
+M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
+
+
+#ifndef BUILDING_DYNAMIC_EMULATION_CPU_6502
+
+	#include <Q/ABIs/emulation.h>
+
+	Q_PRIVATE QEmulatorExport exports[7] = {
+		{Q_EMULATOR_ACTION_POWER, (QDo)m6502_power},
+		{Q_EMULATOR_ACTION_RESET, (QDo)m6502_reset},
+		{Q_EMULATOR_ACTION_RUN,	  (QDo)m6502_run  },
+		{Q_EMULATOR_ACTION_NMI,	  (QDo)m6502_nmi  },
+		{Q_EMULATOR_ACTION_INT,	  (QDo)m6502_irq  }
+	};
+
+	#define SLOT_OFFSET(name) Q_OFFSET_OF(M6502, cb.name)
+
+	Q_PRIVATE QEmulatorSlotLinkage slot_linkages[2] = {
+		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
+		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
+	};
+
+	Q_API_EXPORT QCPUEmulatorABI abi_emulation_cpu_z80 = {
+		0, NULL, 5, exports, {sizeof(M6502), Q_OFFSET_OF(M6502, state), 2, slot_linkages}
+	};
+
+#endif
 
 
 /* 6502.c EOF */
