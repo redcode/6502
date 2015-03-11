@@ -868,7 +868,7 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 	#include <Q/ABIs/emulation.h>
 
-	Q_PRIVATE QEmulatorExport exports[7] = {
+	Q_PRIVATE QEmulatorExport exports[5] = {
 		{Q_EMULATOR_ACTION_POWER, (QDo)m6502_power},
 		{Q_EMULATOR_ACTION_RESET, (QDo)m6502_reset},
 		{Q_EMULATOR_ACTION_RUN,	  (QDo)m6502_run  },
