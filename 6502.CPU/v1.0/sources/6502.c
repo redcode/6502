@@ -134,8 +134,8 @@ Q_INLINE quint16 pop_16bit(M6502 *object)
 #define  INDIRECT_X_ADDRESS READ_16((quint8)(READ_BYTE_OPERAND + X))
 #define  INDIRECT_Y_ADDRESS READ_16(READ_BYTE_OPERAND) + Y
 
-#define EA_READER(name) static quint8 read_##name (M6502 *object)
-#define EA_WRITER(name) static void   write_##name(M6502 *object, quint8 value)
+#define EA_READER(name) Q_PRIVATE quint8 read_##name (M6502 *object)
+#define EA_WRITER(name) Q_PRIVATE void	 write_##name(M6502 *object, quint8 value)
 
 EA_READER(accumulator)	 {PC++; return A;			    }
 EA_READER(immediate)	 {return READ_BYTE_OPERAND;		    }
@@ -868,7 +868,7 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 	#include <Q/ABIs/emulation.h>
 
-	Q_PRIVATE QEmulatorExport exports[5] = {
+	Q_PRIVATE const QEmulatorExport exports[5] = {
 		{Q_EMULATOR_ACTION_POWER, (QDo)m6502_power},
 		{Q_EMULATOR_ACTION_RESET, (QDo)m6502_reset},
 		{Q_EMULATOR_ACTION_RUN,	  (QDo)m6502_run  },
@@ -878,12 +878,12 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 	#define SLOT_OFFSET(name) Q_OFFSET_OF(M6502, cb.name)
 
-	Q_PRIVATE QEmulatorSlotLinkage slot_linkages[2] = {
+	Q_PRIVATE const QEmulatorSlotLinkage slot_linkages[2] = {
 		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
 		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	Q_API_EXPORT QCPUEmulatorABI abi_emulation_cpu_z80 = {
+	Q_API_EXPORT const QCPUEmulatorABI abi_emulation_cpu_z80 = {
 		0, NULL, 5, exports, {sizeof(M6502), Q_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 
