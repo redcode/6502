@@ -216,7 +216,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadEA j_table[8] = {
+Q_PRIVATE ReadEA const j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -227,7 +227,7 @@ Q_PRIVATE const ReadEA j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-Q_PRIVATE const WriteEA k_table[8] = {
+Q_PRIVATE WriteEA const k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -265,7 +265,7 @@ Q_PRIVATE const WriteEA k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadEA g_table[8] = {
+Q_PRIVATE ReadEA const g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -276,7 +276,7 @@ Q_PRIVATE const ReadEA g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-Q_PRIVATE const ReadWriteEA h_table[8] = {
+Q_PRIVATE ReadWriteEA const h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -312,7 +312,7 @@ Q_PRIVATE const ReadWriteEA h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadWriteEA q_table[8] = {
+Q_PRIVATE ReadWriteEA const q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -765,7 +765,7 @@ INSTRUCTION(illegal) {return 2;}
 
 /* MARK: - Instruction Function Table */
 
-Q_PRIVATE const Instruction instruction_table[256] = {
+Q_PRIVATE Instruction const instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
@@ -868,7 +868,7 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 	#include <Q/ABIs/emulation.h>
 
-	Q_PRIVATE const QEmulatorExport exports[5] = {
+	Q_PRIVATE QEmulatorExport const exports[5] = {
 		{Q_EMULATOR_ACTION_POWER, (QDo)m6502_power},
 		{Q_EMULATOR_ACTION_RESET, (QDo)m6502_reset},
 		{Q_EMULATOR_ACTION_RUN,	  (QDo)m6502_run  },
@@ -878,12 +878,12 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 	#define SLOT_OFFSET(name) Q_OFFSET_OF(M6502, cb.name)
 
-	Q_PRIVATE const QEmulatorSlotLinkage slot_linkages[2] = {
+	Q_PRIVATE QEmulatorSlotLinkage const slot_linkages[2] = {
 		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
 		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	Q_API_EXPORT const QCPUEmulatorABI abi_emulation_cpu_z80 = {
+	Q_API_EXPORT QCPUEmulatorABI const abi_emulation_cpu_z80 = {
 		0, NULL, 5, exports, {sizeof(M6502), Q_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 
