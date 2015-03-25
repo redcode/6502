@@ -87,9 +87,8 @@ Q_INLINE quint16 read_16bit(M6502 *object, quint16 address)
 /* MARK: - Macros: Execution Temporal Data */
 
 #define OPCODE object->opcode
-#define CYCLES object->cycles
 #define G_EA   object->g_ea
-#define TICKS  object->ticks
+#define TICKS  object->cycles
 
 
 /* MARK: - Macros: Stack */
@@ -134,8 +133,8 @@ Q_INLINE quint16 pop_16bit(M6502 *object)
 #define  INDIRECT_X_ADDRESS READ_16((quint8)(READ_BYTE_OPERAND + X))
 #define  INDIRECT_Y_ADDRESS READ_16(READ_BYTE_OPERAND) + Y
 
-#define EA_READER(name) Q_PRIVATE quint8 read_##name (M6502 *object)
-#define EA_WRITER(name) Q_PRIVATE void	 write_##name(M6502 *object, quint8 value)
+#define EA_READER(name) static quint8 read_##name (M6502 *object)
+#define EA_WRITER(name) static void   write_##name(M6502 *object, quint8 value)
 
 EA_READER(accumulator)	 {PC++; return A;			    }
 EA_READER(immediate)	 {return READ_BYTE_OPERAND;		    }
@@ -143,10 +142,7 @@ EA_READER(zero_page)	 {return READ_8(ZERO_PAGE_ADDRESS	  );}
 EA_READER(zero_page_x)	 {return READ_8(ZERO_PAGE_X_ADDRESS	  );}
 EA_READER(zero_page_y)	 {return READ_8(ZERO_PAGE_Y_ADDRESS	  );}
 EA_READER(absolute)	 {return READ_8(ABSOLUTE_ADDRESS	  );}
-EA_READER(absolute_x)	 {return READ_8(ABSOLUTE_X_ADDRESS	  );}
-EA_READER(absolute_y)	 {return READ_8(ABSOLUTE_Y_ADDRESS	  );}
 EA_READER(indirect_x)	 {return READ_8(INDIRECT_X_ADDRESS	  );}
-EA_READER(indirect_y)	 {return READ_8(INDIRECT_Y_ADDRESS	  );}
 EA_READER(g_zero_page)   {return READ_8(G_EA = ZERO_PAGE_ADDRESS  );}
 EA_READER(g_zero_page_x) {return READ_8(G_EA = ZERO_PAGE_X_ADDRESS);}
 EA_READER(g_absolute)    {return READ_8(G_EA = ABSOLUTE_ADDRESS	  );}
@@ -216,7 +212,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE ReadEA const j_table[8] = {
+Q_PRIVATE const ReadEA j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -227,7 +223,7 @@ Q_PRIVATE ReadEA const j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-Q_PRIVATE WriteEA const k_table[8] = {
+Q_PRIVATE const WriteEA k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -265,7 +261,7 @@ Q_PRIVATE WriteEA const k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-Q_PRIVATE ReadEA const g_table[8] = {
+Q_PRIVATE const ReadEA g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -276,7 +272,7 @@ Q_PRIVATE ReadEA const g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-Q_PRIVATE ReadWriteEA const h_table[8] = {
+Q_PRIVATE const ReadWriteEA h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -312,7 +308,7 @@ Q_PRIVATE ReadWriteEA const h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE ReadWriteEA const q_table[8] = {
+Q_PRIVATE const ReadWriteEA q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -765,7 +761,7 @@ INSTRUCTION(illegal) {return 2;}
 
 /* MARK: - Instruction Function Table */
 
-Q_PRIVATE Instruction const instruction_table[256] = {
+Q_PRIVATE const Instruction instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
@@ -788,7 +784,7 @@ Q_PRIVATE Instruction const instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
-M6502_API qsize m6502_run(M6502 *object, qsize cycles)
+CPU_6502_API qsize m6502_run(M6502 *object, qsize cycles)
 	{
 	/*------------.
 	| Clear ticks |
@@ -800,7 +796,6 @@ M6502_API qsize m6502_run(M6502 *object, qsize cycles)
 	'------------------------------*/
 	while (TICKS < cycles)
 		{
-		CYCLES = 0;
 		/*--------------------------------------.
 		| Jump to NMI handler if NMI pending... |
 		'--------------------------------------*/
@@ -828,7 +823,7 @@ M6502_API qsize m6502_run(M6502 *object, qsize cycles)
 			P |= IP;
 			TICKS += 7;
 
-#			ifdef M6502_AUTOCLEARS_IRQ_LINE
+#			ifdef EMULATION_CPU_6502_AUTOCLEARS_IRQ_LINE
 				IRQ = FALSE;
 #			endif
 
@@ -845,7 +840,7 @@ M6502_API qsize m6502_run(M6502 *object, qsize cycles)
 	}
 
 
-M6502_API void m6502_reset(M6502 *object)
+CPU_6502_API void m6502_reset(M6502 *object)
 	{
 	PC = 0; //READ_POINTER(RESET);
 	S = 0xFF;
@@ -855,16 +850,15 @@ M6502_API void m6502_reset(M6502 *object)
 	Y = 0;
 	IRQ = FALSE;
 	NMI = FALSE;
-	CYCLES = 0;
 	}
 
 
-M6502_API void m6502_power(M6502 *object, qboolean state) {if (state) m6502_reset(object);}
-M6502_API void m6502_nmi  (M6502 *object)		  {NMI = TRUE ;}
-M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
+CPU_6502_API void m6502_power(M6502 *object, qboolean state) {if (state) m6502_reset(object);}
+CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
+CPU_6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 
 
-#ifndef BUILDING_DYNAMIC_EMULATION_CPU_6502
+#ifdef BUILDING_MODULE_EMULATION_CPU_6502
 
 	#include <Q/ABIs/emulation.h>
 
@@ -883,7 +877,7 @@ M6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
 		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	Q_API_EXPORT QCPUEmulatorABI const abi_emulation_cpu_z80 = {
+	Q_API_EXPORT QCPUEmulatorABI const abi_emulation_cpu_6502 = {
 		0, NULL, 5, exports, {sizeof(M6502), Q_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 
