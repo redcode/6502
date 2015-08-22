@@ -10,22 +10,22 @@ Released under the terms of the GNU General Public License v3. */
 #include <emulation/CPU/6502.h>
 
 typedef struct {
-	quint8 cycles;
-	quint8 (* read )(M6502 *object);
-	void   (* write)(M6502 *object, quint8 value);
+	zuint8 cycles;
+	zuint8 (* read )(M6502 *object);
+	void   (* write)(M6502 *object, zuint8 value);
 } ReadWriteEA;
 
 typedef struct {
-	quint8 cycles;
-	quint8 (* read )(M6502 *object);
+	zuint8 cycles;
+	zuint8 (* read )(M6502 *object);
 } ReadEA;
 
 typedef struct {
-	quint8 cycles;
-	void   (* write)(M6502 *object, quint8 value);
+	zuint8 cycles;
+	void   (* write)(M6502 *object, zuint8 value);
 } WriteEA;
 
-typedef quint8 (* Instruction)(M6502 *object);
+typedef zuint8 (* Instruction)(M6502 *object);
 
 
 /* MARK: - Macros & Functions: Callback */
@@ -42,22 +42,22 @@ typedef quint8 (* Instruction)(M6502 *object);
 #define WRITE_8(address, value)	CB_ACTION(write)(CB_OBJECT(write), (address), (value))
 
 
-Q_INLINE quint16 read_16bit(M6502 *object, quint16 address)
+Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 	{return (READ_8(address + 1) << 8) | READ_8(address);}
 
 
 #define READ_16( address)	   read_16bit (object, address)
-#define READ_POINTER(pointer_name) READ_16(Q_6502_ADDRESS_##pointer_name##_POINTER)
+#define READ_POINTER(pointer_name) READ_16(Z_6502_ADDRESS_##pointer_name##_POINTER)
 
 
 /* MARK: - Macros: Registers */
 
-#define PC object->state.Q_6502_STATE_MEMBER_PC
-#define S  object->state.Q_6502_STATE_MEMBER_S
-#define P  object->state.Q_6502_STATE_MEMBER_P
-#define A  object->state.Q_6502_STATE_MEMBER_A
-#define X  object->state.Q_6502_STATE_MEMBER_X
-#define Y  object->state.Q_6502_STATE_MEMBER_Y
+#define PC object->state.Z_6502_STATE_MEMBER_PC
+#define S  object->state.Z_6502_STATE_MEMBER_S
+#define P  object->state.Z_6502_STATE_MEMBER_P
+#define A  object->state.Z_6502_STATE_MEMBER_A
+#define X  object->state.Z_6502_STATE_MEMBER_X
+#define Y  object->state.Z_6502_STATE_MEMBER_Y
 
 
 /* MARK: - Macros: Flags */
@@ -93,22 +93,22 @@ Q_INLINE quint16 read_16bit(M6502 *object, quint16 address)
 
 /* MARK: - Macros: Stack */
 
-#define PUSH_8(value) WRITE_8(Q_6502_ADDRESS_STACK + (quint8)S--, value);
-#define POP_8	      READ_8 (Q_6502_ADDRESS_STACK + (quint8)++S)
+#define PUSH_8(value) WRITE_8(Z_6502_ADDRESS_STACK + (zuint8)S--, value);
+#define POP_8	      READ_8 (Z_6502_ADDRESS_STACK + (zuint8)++S)
 
 
-Q_INLINE void push_16bit(M6502 *object, quint16 value)
+Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 	{
-	WRITE_8(Q_6502_ADDRESS_STACK | S, value >> 8);
-	WRITE_8(Q_6502_ADDRESS_STACK | (quint8)(S - 1), (quint8)value);
+	WRITE_8(Z_6502_ADDRESS_STACK | S, value >> 8);
+	WRITE_8(Z_6502_ADDRESS_STACK | (zuint8)(S - 1), (zuint8)value);
 	S -= 2;
 	}
 
-Q_INLINE quint16 pop_16bit(M6502 *object)
+Z_INLINE zuint16 pop_16bit(M6502 *object)
 	{
-	quint16 result =
-	  READ_8(Q_6502_ADDRESS_STACK | (quint8)(S + 1)) |
-	((READ_8(Q_6502_ADDRESS_STACK | (quint8)(S + 2))) << 8);
+	zuint16 result =
+	  READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
+	((READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 2))) << 8);
 
 	S += 2;
 	return result;
@@ -125,16 +125,16 @@ Q_INLINE quint16 pop_16bit(M6502 *object)
 #define READ_WORD_OPERAND READ_16((PC += 3) - 2)
 
 #define   ZERO_PAGE_ADDRESS READ_BYTE_OPERAND
-#define ZERO_PAGE_X_ADDRESS (quint8)(READ_BYTE_OPERAND + X)
-#define ZERO_PAGE_Y_ADDRESS (quint8)(READ_BYTE_OPERAND + Y)
+#define ZERO_PAGE_X_ADDRESS (zuint8)(READ_BYTE_OPERAND + X)
+#define ZERO_PAGE_Y_ADDRESS (zuint8)(READ_BYTE_OPERAND + Y)
 #define    ABSOLUTE_ADDRESS READ_WORD_OPERAND
 #define  ABSOLUTE_X_ADDRESS READ_WORD_OPERAND + X
 #define  ABSOLUTE_Y_ADDRESS READ_WORD_OPERAND + Y
-#define  INDIRECT_X_ADDRESS READ_16((quint8)(READ_BYTE_OPERAND + X))
+#define  INDIRECT_X_ADDRESS READ_16((zuint8)(READ_BYTE_OPERAND + X))
 #define  INDIRECT_Y_ADDRESS READ_16(READ_BYTE_OPERAND) + Y
 
-#define EA_READER(name) static quint8 read_##name (M6502 *object)
-#define EA_WRITER(name) static void   write_##name(M6502 *object, quint8 value)
+#define EA_READER(name) static zuint8 read_##name (M6502 *object)
+#define EA_WRITER(name) static void   write_##name(M6502 *object, zuint8 value)
 
 EA_READER(accumulator)	 {PC++; return A;			    }
 EA_READER(immediate)	 {return READ_BYTE_OPERAND;		    }
@@ -151,7 +151,7 @@ EA_READER(g_absolute_x)  {return READ_8(G_EA = ABSOLUTE_X_ADDRESS );}
 
 EA_READER(penalized_absolute_x)
 	{
-	quint16 address = READ_WORD_OPERAND;
+	zuint16 address = READ_WORD_OPERAND;
 
 	if ((address & 0xFF) + X > 255) TICKS++;
 	return READ_8(address + X);
@@ -160,7 +160,7 @@ EA_READER(penalized_absolute_x)
 
 EA_READER(penalized_absolute_y)
 	{
-	quint16 address = READ_WORD_OPERAND;
+	zuint16 address = READ_WORD_OPERAND;
 
 	if ((address & 0xFF) + Y > 255) TICKS++;
 	return READ_8(address + Y);
@@ -169,7 +169,7 @@ EA_READER(penalized_absolute_y)
 
 EA_READER(penalized_indirect_y)
 	{
-	quint16 address = READ_16(READ_BYTE_OPERAND);
+	zuint16 address = READ_16(READ_BYTE_OPERAND);
 
 	if ((address & 0xFF) + Y > 255) TICKS++;
 	return READ_8(address + Y);
@@ -212,7 +212,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadEA j_table[8] = {
+Z_PRIVATE ReadEA const j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -223,7 +223,7 @@ Q_PRIVATE const ReadEA j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-Q_PRIVATE const WriteEA k_table[8] = {
+Z_PRIVATE WriteEA const k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -261,7 +261,7 @@ Q_PRIVATE const WriteEA k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadEA g_table[8] = {
+Z_PRIVATE ReadEA const g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -272,7 +272,7 @@ Q_PRIVATE const ReadEA g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-Q_PRIVATE const ReadWriteEA h_table[8] = {
+Z_PRIVATE ReadWriteEA const h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -308,7 +308,7 @@ Q_PRIVATE const ReadWriteEA h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-Q_PRIVATE const ReadWriteEA q_table[8] = {
+Z_PRIVATE ReadWriteEA const q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -337,8 +337,8 @@ Q_PRIVATE const ReadWriteEA q_table[8] = {
 /* MARK: - Reusable Code */
 
 #define COMPARE(register)							\
-	quint8 v = READ_EA;							\
-	quint8 result = register - v;						\
+	zuint8 v = READ_EA;							\
+	zuint8 result = register - v;						\
 										\
 	P =	(P & ~NZCP)	     /* VP, XP, BP, DP, IP unchanged	     */	\
 		| (result & NP)	     /* NP = result.7			     */	\
@@ -349,13 +349,13 @@ Q_PRIVATE const ReadWriteEA q_table[8] = {
 
 
 #define BRANCH(flag_mask, condition_logic)		\
-	quint8 cycles = 2;				\
+	zuint8 cycles = 2;				\
 							\
 	if (condition_logic(P & flag_mask))		\
 		{					\
-		quint16 pc = PC + 2;			\
-		qint8 offset = READ_8(PC + 1);		\
-		quint16 t = pc + offset;		\
+		zuint16 pc = PC + 2;			\
+		zint8 offset = READ_8(PC + 1);		\
+		zuint16 t = pc + offset;		\
 							\
 		if (t >> 8 == pc >> 8) cycles++;	\
 		else cycles += 2;			\
@@ -373,14 +373,14 @@ Q_PRIVATE const ReadWriteEA q_table[8] = {
 
 #define INC_DEC(operation)		\
 	G;				\
-	quint8 t = READ_EA operation 1;	\
+	zuint8 t = READ_EA operation 1;	\
 					\
 	WRITE_G_EA(t);			\
 	SET_P_NZ(t);			\
 	return EA_CYCLES;
 
 
-#define INSTRUCTION(name) Q_PRIVATE quint8 name(M6502 *object)
+#define INSTRUCTION(name) Z_PRIVATE zuint8 name(M6502 *object)
 
 
 /* MARK: - Instructions: Load/Store Operations
@@ -461,7 +461,7 @@ INSTRUCTION(ora_J) {J; A |= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
 INSTRUCTION(bit_Q)
 	{
 	Q;
-	quint8 v = READ_EA;
+	zuint8 v = READ_EA;
 
 	P =	(P & ~(NP | VP | ZP))
 		| (v & (NP | VP)); /* comprobar */
@@ -491,13 +491,13 @@ INSTRUCTION(cpy_Q) {Q; COMPARE(Y)}
 INSTRUCTION(adc_J)
 	{
 	J;
-	quint8 v = READ_EA;
-	quint8 c = P & CP;
+	zuint8 v = READ_EA;
+	zuint8 c = P & CP;
 
 	if (P & DP)
 		{
-		quint16 l = (A & 0x0F) + (v & 0x0F) + c;
-		quint16 h = (A & 0xF0) + (v & 0xF0);
+		zuint16 l = (A & 0x0F) + (v & 0x0F) + c;
+		zuint16 h = (A & 0xF0) + (v & 0xF0);
 
 		P &= ~(VP | CP | NP | ZP);
 
@@ -518,13 +518,13 @@ INSTRUCTION(adc_J)
 		}
 
 	else	{
-		quint16 t = A + v + c;
+		zuint16 t = A + v + c;
 
 					     P &= ~(VP | CP);
 		if (~(A ^ v) & (A ^ t) & NP) P |= VP;
 		if (t >> 8)		     P |= CP;
 
-		A = (quint8) t;
+		A = (zuint8) t;
 		SET_P_NZ(A);
 		}
 
@@ -535,9 +535,9 @@ INSTRUCTION(adc_J)
 INSTRUCTION(sbc_J)
 	{
 	J;
-	quint8	v = READ_EA;
-	quint8	c = !(P & CP);
-	quint16	t = A - v - c;
+	zuint8	v = READ_EA;
+	zuint8	c = !(P & CP);
+	zuint16	t = A - v - c;
 
 	if (P & DP)
 		{
@@ -562,13 +562,13 @@ INSTRUCTION(sbc_J)
 		}
 
 	else	{
-		quint16 t = A - v - c;
+		zuint16 t = A - v - c;
 
 					    P &= ~(VP | CP);
 		if ((A ^ v) & (A ^ t) & NP) P |= VP;
 		if (!(t >> 8))		    P |= CP;
 
-		A = (quint8) t;
+		A = (zuint8) t;
 		SET_P_NZ(A);
 		}
 
@@ -611,7 +611,7 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 /*
 #define ASL_LSR_ROL_ROR(t_value, c_value)			\
 	G;							\
-	quint8 v = READ_EA, t = t_value;			\
+	zuint8 v = READ_EA, t = t_value;			\
 								\
 	P =	(t	? (P & ~(NP | ZP | CP)) | ((t) & NP)	\
 			: (P & ~(NP |	   CP)) | ZP)		\
@@ -625,7 +625,7 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 INSTRUCTION(asl_G)
 	{
 	G;
-	quint v = READ_EA, t = v << 1;
+	zuint v = READ_EA, t = v << 1;
 
 	WRITE_G_EA(t);
 	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7);
@@ -636,7 +636,7 @@ INSTRUCTION(asl_G)
 INSTRUCTION(lsr_G)
 	{
 	G;
-	quint v = READ_EA, t = v >> 1;
+	zuint v = READ_EA, t = v >> 1;
 
 	WRITE_G_EA(t);
 	P = (P & ~NZCP) | ZP_ZERO(t) | (v & CP);
@@ -647,7 +647,7 @@ INSTRUCTION(lsr_G)
 INSTRUCTION(rol_G)
 	{
 	G;
-	quint v = READ_EA, t = (v << 1) | (P & CP);
+	zuint v = READ_EA, t = (v << 1) | (P & CP);
 
 	WRITE_G_EA(t);
 	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7);
@@ -658,7 +658,7 @@ INSTRUCTION(rol_G)
 INSTRUCTION(ror_G)
 	{
 	G;
-	quint v = READ_EA, t = (v >> 1) | ((P & CP) << 7);
+	zuint v = READ_EA, t = (v >> 1) | ((P & CP) << 7);
 
 	WRITE_G_EA(t);
 	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v & CP);
@@ -761,7 +761,7 @@ INSTRUCTION(illegal) {return 2;}
 
 /* MARK: - Instruction Function Table */
 
-Q_PRIVATE const Instruction instruction_table[256] = {
+Z_PRIVATE Instruction const instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
@@ -784,7 +784,7 @@ Q_PRIVATE const Instruction instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
-CPU_6502_API qsize m6502_run(M6502 *object, qsize cycles)
+CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 	{
 	/*------------.
 	| Clear ticks |
@@ -853,32 +853,32 @@ CPU_6502_API void m6502_reset(M6502 *object)
 	}
 
 
-CPU_6502_API void m6502_power(M6502 *object, qboolean state) {if (state) m6502_reset(object);}
+CPU_6502_API void m6502_power(M6502 *object, zboolean state) {if (state) m6502_reset(object);}
 CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
-CPU_6502_API void m6502_irq  (M6502 *object, qboolean state) {IRQ = state;}
+CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 
 #ifdef BUILDING_MODULE_EMULATION_CPU_6502
 
-	#include <Q/ABIs/emulation.h>
+	#include <Z/ABIs/emulation.h>
 
-	Q_PRIVATE QEmulatorExport const exports[5] = {
-		{Q_EMULATOR_ACTION_POWER, (QDo)m6502_power},
-		{Q_EMULATOR_ACTION_RESET, (QDo)m6502_reset},
-		{Q_EMULATOR_ACTION_RUN,	  (QDo)m6502_run  },
-		{Q_EMULATOR_ACTION_NMI,	  (QDo)m6502_nmi  },
-		{Q_EMULATOR_ACTION_INT,	  (QDo)m6502_irq  }
+	Z_PRIVATE ZEmulatorExport const exports[5] = {
+		{Z_EMULATOR_ACTION_POWER, (ZDo)m6502_power},
+		{Z_EMULATOR_ACTION_RESET, (ZDo)m6502_reset},
+		{Z_EMULATOR_ACTION_RUN,	  (ZDo)m6502_run  },
+		{Z_EMULATOR_ACTION_NMI,	  (ZDo)m6502_nmi  },
+		{Z_EMULATOR_ACTION_INT,	  (ZDo)m6502_irq  }
 	};
 
-	#define SLOT_OFFSET(name) Q_OFFSET_OF(M6502, cb.name)
+	#define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
 
-	Q_PRIVATE QEmulatorSlotLinkage const slot_linkages[2] = {
-		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
-		{Q_EMULATOR_OBJECT_MEMORY,  Q_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
+	Z_PRIVATE ZEmulatorSlotLinkage const slot_linkages[2] = {
+		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
+		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	Q_API_EXPORT QCPUEmulatorABI const abi_emulation_cpu_6502 = {
-		0, NULL, 5, exports, {sizeof(M6502), Q_OFFSET_OF(M6502, state), 2, slot_linkages}
+	Z_API_EXPORT ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
+		0, NULL, 5, exports, {sizeof(M6502), Z_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 
 #endif
