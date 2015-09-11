@@ -13,15 +13,15 @@ Released under the terms of the GNU General Public License v3. */
 #include <Z/hardware/CPU/architecture/650x.h>
 #include <Z/types/generic functions.h>
 
-#ifndef EMULATION_CPU_6502_NO_SLOTS
+#ifndef CPU_6502_NO_SLOTS
 #	include <Z/macros/slot.h>
 #endif
 
-#if defined(BUILDING_DYNAMIC_EMULATION_CPU_6052)
+#if defined(CPU_6052_BUILDING_DYNAMIC)
 #	define CPU_6502_API Z_API_EXPORT
-#elif defined(BUILDING_STATIC_EMULATION_CPU_6502)
+#elif defined(CPU_6502_BUILDING_STATIC)
 #	define CPU_6502_API Z_PUBLIC
-#elif defined(USE_STATIC_EMULATION_CPU_6502)
+#elif defined(CPU_6502_USE_STATIC)
 #	define CPU_6502_API
 #else
 #	define CPU_6502_API Z_API
@@ -35,7 +35,7 @@ typedef struct {
 	zboolean   nmi;
 	zboolean   irq;
 
-#	ifdef EMULATION_CPU_6502_NO_SLOTS
+#	ifdef CPU_6502_NO_SLOTS
 		void* cb_context;
 
 		struct {Z16BitAddressRead8Bit  read;

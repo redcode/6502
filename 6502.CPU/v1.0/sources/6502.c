@@ -30,7 +30,7 @@ typedef zuint8 (* Instruction)(M6502 *object);
 
 /* MARK: - Macros & Functions: Callback */
 
-#ifdef EMULATION_CPU_6502_NO_SLOTS
+#ifdef CPU_6502_NO_SLOTS
 #	define CB_ACTION(name) object->cb.name
 #	define CB_OBJECT(name) object->cb_context
 #else
@@ -747,7 +747,7 @@ INSTRUCTION(rti) {P = POP_8; PC = POP_16; return 6;}
 
 INSTRUCTION(brk)
 	{
-	READ_8(PC + 1); /* BRK padding byte, ignored but the access is emulated */
+	READ_8 (PC + 1); /* BRK padding byte, ignored but the access is emulated */
 	PUSH_16(PC + 2);
 	PUSH_8(P | BP);
 	P |=  BP | IP;
@@ -858,7 +858,7 @@ CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
 CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 
-#ifdef BUILDING_MODULE_EMULATION_CPU_6502
+#ifdef CPU_6502_BUILDING_MODULE
 
 	#include <Z/ABIs/emulation.h>
 
