@@ -9,6 +9,15 @@ Released under the terms of the GNU General Public License v3. */
 
 #include <emulation/CPU/6502.h>
 
+#if defined(CPU_6502_BUILDING_DYNAMIC)
+#	define CPU_6502_API Z_API_EXPORT
+#else
+#	define CPU_6502_API
+#endif
+
+
+/* MARK: - Types */
+
 typedef struct {
 	zuint8 cycles;
 	zuint8 (* read )(M6502 *object);
@@ -212,7 +221,7 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-Z_PRIVATE ReadEA const j_table[8] = {
+static ReadEA const j_table[8] = {
 	{6, read_indirect_x	     },
 	{3, read_zero_page	     },
 	{2, read_immediate	     },
@@ -223,7 +232,7 @@ Z_PRIVATE ReadEA const j_table[8] = {
 	{4, read_penalized_absolute_x}
 };
 
-Z_PRIVATE WriteEA const k_table[8] = {
+static WriteEA const k_table[8] = {
 	{6, write_indirect_x },
 	{3, write_zero_page  },
 	{0, NULL	     },
@@ -261,7 +270,7 @@ Z_PRIVATE WriteEA const k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-Z_PRIVATE ReadEA const g_table[8] = {
+static ReadEA const g_table[8] = {
 	{0, NULL	      },
 	{5, read_g_zero_page  },
 	{2, read_accumulator  },
@@ -272,7 +281,7 @@ Z_PRIVATE ReadEA const g_table[8] = {
 	{7, read_g_absolute_x }
 };
 
-Z_PRIVATE ReadWriteEA const h_table[8] = {
+static ReadWriteEA const h_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -308,7 +317,7 @@ Z_PRIVATE ReadWriteEA const h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-Z_PRIVATE ReadWriteEA const q_table[8] = {
+static ReadWriteEA const q_table[8] = {
 	{2, read_immediate,	       NULL		},
 	{3, read_zero_page,	       write_zero_page	},
 	{0, NULL,		       NULL		},
@@ -380,7 +389,7 @@ Z_PRIVATE ReadWriteEA const q_table[8] = {
 	return EA_CYCLES;
 
 
-#define INSTRUCTION(name) Z_PRIVATE zuint8 name(M6502 *object)
+#define INSTRUCTION(name) static zuint8 name(M6502 *object)
 
 
 /* MARK: - Instructions: Load/Store Operations
@@ -761,7 +770,7 @@ INSTRUCTION(illegal) {return 2;}
 
 /* MARK: - Instruction Function Table */
 
-Z_PRIVATE Instruction const instruction_table[256] = {
+static Instruction const instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
@@ -823,7 +832,7 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 			P |= IP;
 			TICKS += 7;
 
-#			ifdef EMULATION_CPU_6502_AUTOCLEARS_IRQ_LINE
+#			ifdef CPU_6502_AUTOCLEARS_IRQ_LINE
 				IRQ = FALSE;
 #			endif
 
@@ -862,7 +871,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 	#include <Z/ABIs/emulation.h>
 
-	Z_PRIVATE ZEmulatorExport const exports[5] = {
+	static ZEmulatorExport const exports[5] = {
 		{Z_EMULATOR_ACTION_POWER, (ZDo)m6502_power},
 		{Z_EMULATOR_ACTION_RESET, (ZDo)m6502_reset},
 		{Z_EMULATOR_ACTION_RUN,	  (ZDo)m6502_run  },
@@ -872,7 +881,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 	#define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
 
-	Z_PRIVATE ZEmulatorSlotLinkage const slot_linkages[2] = {
+	static ZEmulatorSlotLinkage const slot_linkages[2] = {
 		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
 		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};

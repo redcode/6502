@@ -17,16 +17,6 @@ Released under the terms of the GNU General Public License v3. */
 #	include <Z/macros/slot.h>
 #endif
 
-#if defined(CPU_6052_BUILDING_DYNAMIC)
-#	define CPU_6502_API Z_API_EXPORT
-#elif defined(CPU_6502_BUILDING_STATIC)
-#	define CPU_6502_API Z_PUBLIC
-#elif defined(CPU_6502_USE_STATIC)
-#	define CPU_6502_API
-#else
-#	define CPU_6502_API Z_API
-#endif
-
 typedef struct {
 	zsize	   cycles;
 	Z6502State state;
@@ -48,21 +38,31 @@ typedef struct {
 #	endif
 } M6502;
 
-Z_C_SYMBOLS_BEGIN
+#if !defined(CPU_6502_BUILDING_DYNAMIC) && !defined(CPU_6502_BUILDING_STATIC)
 
-CPU_6502_API zsize m6502_run   (M6502*	 object,
-				zsize	 cycles);
+#	if defined(CPU_6052_USE_STATIC)
+#		define CPU_6502_API
+#	else
+#		define CPU_6502_API Z_API
+#	endif
 
-CPU_6502_API void  m6502_power (M6502*	 object,
-				zboolean state);
+	Z_C_SYMBOLS_BEGIN
 
-CPU_6502_API void  m6502_reset (M6502*	 object);
+	CPU_6502_API zsize m6502_run   (M6502*	 object,
+					zsize	 cycles);
 
-CPU_6502_API void  m6502_nmi   (M6502*	 object);
+	CPU_6502_API void  m6502_power (M6502*	 object,
+					zboolean state);
 
-CPU_6502_API void  m6502_irq   (M6502*	 object,
-				zboolean state);
+	CPU_6502_API void  m6502_reset (M6502*	 object);
 
-Z_C_SYMBOLS_END
+	CPU_6502_API void  m6502_nmi   (M6502*	 object);
+
+	CPU_6502_API void  m6502_irq   (M6502*	 object,
+					zboolean state);
+
+	Z_C_SYMBOLS_END
+
+#endif
 
 #endif /* __emulation_CPU_6502_H__ */
