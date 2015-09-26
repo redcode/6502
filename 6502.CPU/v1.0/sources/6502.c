@@ -886,7 +886,7 @@ API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	API ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
+	API ZCPUEmulatorABI const abi_cpu_6502 = {
 		0, NULL, 5, exports, {sizeof(M6502), Z_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 
