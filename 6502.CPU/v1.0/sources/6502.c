@@ -10,9 +10,9 @@ Released under the terms of the GNU General Public License v3. */
 #include <emulation/CPU/6502.h>
 
 #if defined(CPU_6502_BUILDING_DYNAMIC)
-#	define CPU_6502_API Z_API_EXPORT
+#	define API Z_API_EXPORT
 #else
-#	define CPU_6502_API
+#	define API
 #endif
 
 
@@ -793,7 +793,7 @@ static Instruction const instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
-CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
+API zsize m6502_run(M6502 *object, zsize cycles)
 	{
 	/*------------.
 	| Clear ticks |
@@ -832,7 +832,7 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 			P |= IP;
 			TICKS += 7;
 
-#			ifdef CPU_6502_AUTOCLEARS_IRQ_LINE
+#			ifdef CPU_6502_AUTOCLEAR_IRQ_LINE
 				IRQ = FALSE;
 #			endif
 
@@ -849,7 +849,7 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 	}
 
 
-CPU_6502_API void m6502_reset(M6502 *object)
+API void m6502_reset(M6502 *object)
 	{
 	PC = 0; //READ_POINTER(RESET);
 	S = 0xFF;
@@ -862,9 +862,9 @@ CPU_6502_API void m6502_reset(M6502 *object)
 	}
 
 
-CPU_6502_API void m6502_power(M6502 *object, zboolean state) {if (state) m6502_reset(object);}
-CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
-CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
+API void m6502_power(M6502 *object, zboolean state) {if (state) m6502_reset(object);}
+API void m6502_nmi  (M6502 *object)		    {NMI = TRUE ;}
+API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 
 #ifdef CPU_6502_BUILDING_MODULE
@@ -882,11 +882,11 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 	#define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
 
 	static ZEmulatorSlotLinkage const slot_linkages[2] = {
-		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
-		{Z_EMULATOR_OBJECT_MEMORY,  Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
+		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
+		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	Z_API_EXPORT ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
+	API ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
 		0, NULL, 5, exports, {sizeof(M6502), Z_OFFSET_OF(M6502, state), 2, slot_linkages}
 	};
 

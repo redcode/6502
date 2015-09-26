@@ -46,7 +46,11 @@ typedef struct {
 #		define CPU_6502_API Z_API
 #	endif
 
+#	include <Z/ABIs/emulation.h>
+
 	Z_C_SYMBOLS_BEGIN
+
+	CPU_6502_API extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
 
 	CPU_6502_API zsize m6502_run   (M6502*	 object,
 					zsize	 cycles);
