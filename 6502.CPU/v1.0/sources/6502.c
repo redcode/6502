@@ -7,7 +7,7 @@
 Copyright © 1999-2015 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#if defined(CPU_6502_BUILDING_DYNAMIC)
+#ifdef CPU_6502_BUILDING_DYNAMIC
 #	define CPU_6502_API Z_API_EXPORT
 #else
 #	define CPU_6502_API

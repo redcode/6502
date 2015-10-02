@@ -18,7 +18,7 @@ Released under the terms of the GNU General Public License v3. */
 #endif
 
 #ifndef CPU_6502_API
-#	if defined(CPU_6502_USE_STATIC)
+#	ifdef CPU_6502_USE_STATIC
 #		define CPU_6502_API
 #	else
 #		define CPU_6502_API Z_API
