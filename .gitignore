@@ -1,7 +1,3 @@
 # OS generated files
 .DS_Store
 .directory
-
-# Per-user IDE configuration files
-6502.CPU/v1.0/development/Xcode/6502.xcodeproj/project.xcworkspace
-6502.CPU/v1.0/development/Xcode/6502.xcodeproj/xcuserdata
