@@ -361,22 +361,22 @@ static ReadWriteEA const q_table[8] = {
 	return EA_CYCLES;
 
 
-#define BRANCH(flag_mask, condition_logic)		\
-	zuint8 cycles = 2;				\
-							\
-	if (condition_logic(P & flag_mask))		\
-		{					\
-		zuint16 pc = PC + 2;			\
-		zint8 offset = READ_8(PC + 1);		\
-		zuint16 t = pc + offset;		\
-							\
-		if (t >> 8 == pc >> 8) cycles++;	\
-		else cycles += 2;			\
-		PC = t;					\
-		}					\
-							\
-	else PC += 2;					\
-							\
+#define BRANCH(flag_mask, condition_logic)	 \
+	zuint8 cycles = 2;			 \
+						 \
+	if (condition_logic(P & flag_mask))	 \
+		{				 \
+		zuint16 pc = PC + 2;		 \
+		zint8 offset = READ_8(PC + 1);	 \
+		zuint16 t = pc + offset;	 \
+						 \
+		if (t >> 8 == pc >> 8) cycles++; \
+		else cycles += 2;		 \
+		PC = t;				 \
+		}				 \
+						 \
+	else PC += 2;				 \
+						 \
 	return cycles;
 
 
@@ -477,7 +477,7 @@ INSTRUCTION(bit_Q)
 	zuint8 v = READ_EA;
 
 	P =	(P & ~(NP | VP | ZP))
-		| (v & (NP | VP)); /* comprobar */
+		| (v & (NP | VP)); /* TODO: Check if this is correct. */
 
 	if (!(v & A)) P |= ZP;
 	return EA_CYCLES;
@@ -621,19 +621,17 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 |  ror G	011ggg10  n.....z*  G	    |
 '------------------------------------------*/
 
-/*
-#define ASL_LSR_ROL_ROR(t_value, c_value)			\
-	G;							\
-	zuint8 v = READ_EA, t = t_value;			\
-								\
-	P =	(t	? (P & ~(NP | ZP | CP)) | ((t) & NP)	\
-			: (P & ~(NP |	   CP)) | ZP)		\
-		| c_value;					\
-								\
-	WRITE_G_EA(t);						\
-	return EA_CYCLES;
+/*#define ASL_LSR_ROL_ROR(t_value, c_value)		     \
+	G;						     \
+	zuint8 v = READ_EA, t = t_value;		     \
+							     \
+	P =	(t	? (P & ~(NP | ZP | CP)) | ((t) & NP) \
+			: (P & ~(NP |	   CP)) | ZP)	     \
+		| c_value;				     \
+							     \
+	WRITE_G_EA(t);					     \
+	return EA_CYCLES;*/
 
-*/
 
 INSTRUCTION(asl_G)
 	{
