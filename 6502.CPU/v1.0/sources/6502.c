@@ -104,7 +104,7 @@ Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 #define TICKS  object->cycles
 
 
-/* MARK: - Macros: Stack */
+/* MARK: - Macros & Functions: Stack */
 
 #define PUSH_8(value) WRITE_8(Z_6502_ADDRESS_STACK + (zuint8)S--, value);
 #define POP_8	      READ_8 (Z_6502_ADDRESS_STACK + (zuint8)++S)
@@ -333,7 +333,7 @@ static ReadWriteEA const q_table[8] = {
 };
 
 
-/* MARK: - Addressing Accessors */
+/* MARK: - Macros: Addressing Accessors */
 
 #define SET_EA(type, table) type const *ea = &table##_table[(OPCODE & 28) >> 2];
 #define J		    SET_EA(ReadEA,	j)
@@ -347,7 +347,7 @@ static ReadWriteEA const q_table[8] = {
 #define WRITE_G_EA(value)   if (EA_CYCLES == 2) A = value; else WRITE_8(G_EA, value);
 
 
-/* MARK: - Reusable Code */
+/* MARK: - Macros: Reusable Code */
 
 #define COMPARE(register)							\
 	zuint8 v = READ_EA;							\
