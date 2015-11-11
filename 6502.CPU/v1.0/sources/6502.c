@@ -773,7 +773,7 @@ INSTRUCTION(illegal) {return 2;}
 /* MARK: - Instruction Function Table */
 
 static Instruction const instruction_table[256] = {
-/* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F	*/
+/* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F */
 /* 0 */	brk,	    ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, php, ora_J,   asl_G,   illegal, illegal,	ora_J, asl_G,	illegal,
 /* 1 */	bpl_OFFSET, ora_J, illegal, illegal, illegal, ora_J, asl_G, illegal, clc, ora_J,   illegal, illegal, illegal,	ora_J, asl_G,	illegal,
 /* 2 */	jsr_WORD,   and_J, illegal, illegal, bit_Q,   and_J, rol_G, illegal, plp, and_J,   rol_G,   illegal, bit_Q,	and_J, rol_G,	illegal,
