@@ -873,12 +873,12 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 	#include <Z/ABIs/emulation.h>
 
-	static ZEmulatorExport const exports[5] = {
-		{Z_EMULATOR_ACTION_POWER, (ZDo)m6502_power},
-		{Z_EMULATOR_ACTION_RESET, (ZDo)m6502_reset},
-		{Z_EMULATOR_ACTION_RUN,	  (ZDo)m6502_run  },
-		{Z_EMULATOR_ACTION_NMI,	  (ZDo)m6502_nmi  },
-		{Z_EMULATOR_ACTION_INT,	  (ZDo)m6502_irq  }
+	static ZEmulatorFunctionExport const exports[5] = {
+		{Z_EMULATOR_ACTION_POWER, (ZEmulatorFunction)m6502_power},
+		{Z_EMULATOR_ACTION_RESET, (ZEmulatorFunction)m6502_reset},
+		{Z_EMULATOR_ACTION_RUN,	  (ZEmulatorFunction)m6502_run	},
+		{Z_EMULATOR_ACTION_NMI,	  (ZEmulatorFunction)m6502_nmi	},
+		{Z_EMULATOR_ACTION_INT,	  (ZEmulatorFunction)m6502_irq	}
 	};
 
 	#define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
@@ -889,7 +889,15 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 	};
 
 	CPU_6502_API ZCPUEmulatorABI const abi_cpu_6502 = {
-		0, NULL, 5, exports, {sizeof(M6502), Z_OFFSET_OF(M6502, state), 2, slot_linkages}
+		/* dependency_count	       */ 0,
+		/* dependencies		       */ NULL,
+		/* function_export_count       */ 5,
+		/* function_exports	       */ exports,
+		/* instance_size	       */ sizeof(M6502),
+		/* instance_state_offset       */ Z_OFFSET_OF(M6502, state),
+		/* instance_state_size	       */ sizeof(Z6502State),
+		/* instance_slot_linkage_count */ 2,
+		/* instance_slot_linkages      */ slot_linkages
 	};
 
 #endif
