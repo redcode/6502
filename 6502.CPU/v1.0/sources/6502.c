@@ -101,7 +101,7 @@ Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 #define OPCODE object->opcode
 #define G_EA   object->g_ea
-#define TICKS  object->cycles
+#define CYCLES object->cycles
 
 
 /* MARK: - Macros & Functions: Stack */
@@ -166,7 +166,7 @@ EA_READER(penalized_absolute_x)
 	{
 	zuint16 address = READ_WORD_OPERAND;
 
-	if ((address & 0xFF) + X > 255) TICKS++;
+	if ((address & 0xFF) + X > 255) CYCLES++;
 	return READ_8(address + X);
 	}
 
@@ -175,7 +175,7 @@ EA_READER(penalized_absolute_y)
 	{
 	zuint16 address = READ_WORD_OPERAND;
 
-	if ((address & 0xFF) + Y > 255) TICKS++;
+	if ((address & 0xFF) + Y > 255) CYCLES++;
 	return READ_8(address + Y);
 	}
 
@@ -184,7 +184,7 @@ EA_READER(penalized_indirect_y)
 	{
 	zuint16 address = READ_16(READ_BYTE_OPERAND);
 
-	if ((address & 0xFF) + Y > 255) TICKS++;
+	if ((address & 0xFF) + Y > 255) CYCLES++;
 	return READ_8(address + Y);
 	}
 
@@ -797,15 +797,15 @@ static Instruction const instruction_table[256] = {
 
 CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 	{
-	/*------------.
-	| Clear ticks |
-	'------------*/
-	TICKS = 0;
+	/*-------------.
+	| Clear cycles |
+	'-------------*/
+	CYCLES = 0;
 
 	/*------------------------------.
 	| Execute until cycles consumed |
 	'------------------------------*/
-	while (TICKS < cycles)
+	while (CYCLES < cycles)
 		{
 		/*--------------------------------------.
 		| Jump to NMI handler if NMI pending... |
@@ -818,7 +818,7 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 			PUSH_8(P);		/* Save current status in the stack.		       */
 			PC = READ_POINTER(NMI); /* Make PC point to the NMI routine.		       */
 			P |= IP;		/* Disable interrupts to don't bother the NMI routine. */
-			TICKS += 7;		/* Accepting a NMI consumes 7 ticks.		       */
+			CYCLES += 7;		/* Accepting a NMI consumes 7 ticks.		       */
 			continue;
 			}
 
@@ -832,7 +832,7 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 			PUSH_8(P);
 			PC = READ_POINTER(IRQ);
 			P |= IP;
-			TICKS += 7;
+			CYCLES += 7;
 
 #			ifdef CPU_6502_AUTOCLEAR_IRQ_LINE
 				IRQ = FALSE;
@@ -844,10 +844,10 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 		/*-----------------------------------------------.
 		| Execute instruction and update consumed cycles |
 		'-----------------------------------------------*/
-		TICKS += instruction_table[OPCODE = READ_8(PC)](object);
+		CYCLES += instruction_table[OPCODE = READ_8(PC)](object);
 		}
 
-	return TICKS;
+	return CYCLES;
 	}
 
 
@@ -868,6 +868,8 @@ CPU_6502_API void m6502_power(M6502 *object, zboolean state) {if (state) m6502_r
 CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
 CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
+
+/* MARK: - ABI */
 
 #ifdef CPU_6502_BUILDING_MODULE
 
