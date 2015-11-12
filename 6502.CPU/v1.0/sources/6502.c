@@ -397,17 +397,17 @@ static ReadWriteEA const q_table[8] = {
 
 
 /* MARK: - Instructions: Load/Store Operations
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  lda J	101jjj01  n.....z.  J	    |
-|  ldx H	101ppp10  ........  H	    |
-|  ldy Q	101qqq00  ........  Q	    |
-|  sta K	100kkk01  ........  K	    |
-|  stx H	100ppp10  ........  H	    |
-|  sty Q	100qqq00  ........  Q	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  lda J       101jjj01  n.....z.  J	   |
+|  ldx H       101ppp10  ........  H	   |
+|  ldy Q       101qqq00  ........  Q	   |
+|  sta K       100kkk01  ........  K	   |
+|  stx H       100ppp10  ........  H	   |
+|  sty Q       100qqq00  ........  Q	   |
+'-----------------------------------------*/
 
 INSTRUCTION(lda_J) {J; A = READ_EA; SET_P_NZ(A); return EA_CYCLES;}
 INSTRUCTION(ldx_H) {H; X = READ_EA; SET_P_NZ(X); return EA_CYCLES;}
@@ -418,15 +418,15 @@ INSTRUCTION(sty_Q) {Q; WRITE_EA(Y);		 return EA_CYCLES;}
 
 
 /* MARK: - Instructions: Register Transfers
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  tax		<  AA  >  n.....z.  2	    |
-|  tay		<  A8  >  n.....z.  2	    |
-|  txa		<  8A  >  n.....z.  2	    |
-|  tya		<  98  >  n.....z.  2	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  tax	       <  AA  >  n.....z.  2	   |
+|  tay	       <  A8  >  n.....z.  2	   |
+|  txa	       <  8A  >  n.....z.  2	   |
+|  tya	       <  98  >  n.....z.  2	   |
+'-----------------------------------------*/
 
 INSTRUCTION(tax) {PC++; X = A; SET_P_NZ(X); return 2;}
 INSTRUCTION(tay) {PC++; Y = A; SET_P_NZ(Y); return 2;}
@@ -435,17 +435,17 @@ INSTRUCTION(tya) {PC++; A = Y; SET_P_NZ(A); return 2;}
 
 
 /* MARK: - Instructions: Stack Operations
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  tsx		<  BA  >  n.....z.  2	    |
-|  txs		<  9A  >  ........  2	    |
-|  pha		<  48  >  ........  3	    |
-|  php		<  08  >  ........  3	    |
-|  pla		<  68  >  n.....z.  4	    |
-|  plp		<  28  >  ********  4	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  tsx	       <  BA  >  n.....z.  2	   |
+|  txs	       <  9A  >  ........  2	   |
+|  pha	       <  48  >  ........  3	   |
+|  php	       <  08  >  ........  3	   |
+|  pla	       <  68  >  n.....z.  4	   |
+|  plp	       <  28  >  ********  4	   |
+'-----------------------------------------*/
 
 INSTRUCTION(tsx) {PC++; X = S; SET_P_NZ(X);	return 2;}
 INSTRUCTION(txs) {PC++; S = X;			return 2;}
@@ -456,15 +456,15 @@ INSTRUCTION(plp) {PC++; P = POP_8;		return 4;}
 
 
 /* MARK: - Instructions: Logical
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  and J	001jjj01  n.....z.  J	    |
-|  eor J	010jjj01  n.....z.  J	    |
-|  ora J	000jjj01  n.....z.  J	    |
-|  bit Q	001qqq00  **....z.  Q	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  and J       001jjj01  n.....z.  J	   |
+|  eor J       010jjj01  n.....z.  J	   |
+|  ora J       000jjj01  n.....z.  J	   |
+|  bit Q       001qqq00  **....z.  Q	   |
+'-----------------------------------------*/
 
 INSTRUCTION(and_J) {J; A &= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
 INSTRUCTION(eor_J) {J; A ^= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
@@ -485,16 +485,16 @@ INSTRUCTION(bit_Q)
 
 
 /* MARK: - Instructions: Arithmetic
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  cmp J	110jjj01  n.....zc  J	    |
-|  cpx Q	111qqq00  n.....zc  Q	    |
-|  cpy Q	110qqq00  n.....zc  Q	    |
-|  adc J	011jjj01  nv....zc  J	    |
-|  sbc J	111jjj01  nv....zc  J	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  cmp J       110jjj01  n.....zc  J	   |
+|  cpx Q       111qqq00  n.....zc  Q	   |
+|  cpy Q       110qqq00  n.....zc  Q	   |
+|  adc J       011jjj01  nv....zc  J	   |
+|  sbc J       111jjj01  nv....zc  J	   |
+'-----------------------------------------*/
 
 INSTRUCTION(cmp_J) {J; COMPARE(A)}
 INSTRUCTION(cpx_Q) {Q; COMPARE(X)}
@@ -590,17 +590,17 @@ INSTRUCTION(sbc_J)
 
 
 /* MARK: - Instructions: Increments & Decrements
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  inc G	111ggg10  n.....z.  G	    |
-|  inx		<  E8  >  n.....z.  2	    |
-|  iny		<  C8  >  n.....z.  2	    |
-|  dec G	110ggg10  n.....z.  G	    |
-|  dex		<  CA  >  n.....z.  2	    |
-|  dey		<  88  >  n.....z.  2	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  inc G       111ggg10  n.....z.  G	   |
+|  inx	       <  E8  >  n.....z.  2	   |
+|  iny	       <  C8  >  n.....z.  2	   |
+|  dec G       110ggg10  n.....z.  G	   |
+|  dex	       <  CA  >  n.....z.  2	   |
+|  dey	       <  88  >  n.....z.  2	   |
+'-----------------------------------------*/
 
 INSTRUCTION(inc_G) {INC_DEC(+)			     }
 INSTRUCTION(inx)   {PC++; X++; SET_P_NZ(X); return 2;}
@@ -611,15 +611,15 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 
 
 /* MARK: - Instructions: Shifts
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  asl G	000ggg10  n.....z*  G	    |
-|  lsr G	010ggg10  0.....z*  G	    |
-|  rol G	001ggg10  n.....z*  G	    |
-|  ror G	011ggg10  n.....z*  G	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  asl G       000ggg10  n.....z*  G	   |
+|  lsr G       010ggg10  0.....z*  G	   |
+|  rol G       001ggg10  n.....z*  G	   |
+|  ror G       011ggg10  n.....z*  G	   |
+'-----------------------------------------*/
 
 /*#define ASL_LSR_ROL_ROR(t_value, c_value)		     \
 	G;						     \
@@ -678,15 +678,15 @@ INSTRUCTION(ror_G)
 
 
 /* MARK: - Instructions: Jumps & Calls
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  jmp WORD	<  4C  >  ........  3	    |
-|  jmp (WORD)	<  6C  >  ........  5	    |
-|  jsr WORD	<  20  >  ........  6	    |
-|  rts		<  60  >  ........  6	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  jmp WORD    <  4C  >  ........  3	   |
+|  jmp (WORD)  <  6C  >  ........  5	   |
+|  jsr WORD    <  20  >  ........  6	   |
+|  rts	       <  60  >  ........  6	   |
+'-----------------------------------------*/
 
 INSTRUCTION(jmp_WORD)  {PC = READ_16(PC + 1);		       return 3;}
 INSTRUCTION(jmp_vWORD) {PC = READ_16(READ_16(PC + 1));	       return 5;}
@@ -695,19 +695,19 @@ INSTRUCTION(rts)       {PC = POP_16 + 1;		       return 6;}
 
 
 /* MARK: - Instructions: Branches
-.----------------------------------------------.
-|		Opcode	  Flags		       |
-|  Instruction	76543210  nvxbdizc  Cycles     |
-|  ------------------------------------------  |
-|  bcc OFFSET	<  90  >  ........  2 / 3 / 4  |
-|  bcs OFFSET	<  B0  >  ........  2 / 3 / 4  |
-|  beq OFFSET	<  F0  >  ........  2 / 3 / 4  |
-|  bmi OFFSET	<  30  >  ........  2 / 3 / 4  |
-|  bne OFFSET	<  D0  >  ........  2 / 3 / 4  |
-|  bpl OFFSET	<  10  >  ........  2 / 3 / 4  |
-|  bvc OFFSET	<  50  >  ........  2 / 3 / 4  |
-|  bvs OFFSET	<  70  >  ........  2 / 3 / 4  |
-'---------------------------------------------*/
+.---------------------------------------------.
+|	       Opcode	 Flags		      |
+|  Assembly    76543210  nvxbdizc  Cycles     |
+|  -----------------------------------------  |
+|  bcc OFFSET  <  90  >  ........  2 / 3 / 4  |
+|  bcs OFFSET  <  B0  >  ........  2 / 3 / 4  |
+|  beq OFFSET  <  F0  >  ........  2 / 3 / 4  |
+|  bmi OFFSET  <  30  >  ........  2 / 3 / 4  |
+|  bne OFFSET  <  D0  >  ........  2 / 3 / 4  |
+|  bpl OFFSET  <  10  >  ........  2 / 3 / 4  |
+|  bvc OFFSET  <  50  >  ........  2 / 3 / 4  |
+|  bvs OFFSET  <  70  >  ........  2 / 3 / 4  |
+'--------------------------------------------*/
 
 INSTRUCTION(bcc_OFFSET) {BRANCH_IF_CLEAR(CP);}
 INSTRUCTION(bcs_OFFSET) {BRANCH_IF_SET	(CP);}
@@ -720,18 +720,18 @@ INSTRUCTION(bvs_OFFSET) {BRANCH_IF_SET	(VP);}
 
 
 /* MARK: - Instructions: Status Flag Changes
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  clc		<  18  >  .......0  2	    |
-|  cld		<  D8  >  ....0...  2	    |
-|  cli		<  58  >  .....0..  2	    |
-|  clv		<  B8  >  .0......  2	    |
-|  sec		<  38  >  .......1  2	    |
-|  sed		<  F8  >  ....1...  2	    |
-|  sei		<  78  >  .....1..  2	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  clc	       <  18  >  .......0  2	   |
+|  cld	       <  D8  >  ....0...  2	   |
+|  cli	       <  58  >  .....0..  2	   |
+|  clv	       <  B8  >  .0......  2	   |
+|  sec	       <  38  >  .......1  2	   |
+|  sed	       <  F8  >  ....1...  2	   |
+|  sei	       <  78  >  .....1..  2	   |
+'-----------------------------------------*/
 
 INSTRUCTION(clc) {PC++; P &= ~CP; return 2;}
 INSTRUCTION(cld) {PC++; P &= ~DP; return 2;}
@@ -743,14 +743,14 @@ INSTRUCTION(sei) {PC++; P |=  IP; return 2;}
 
 
 /* MARK: - Instructions: System Functions
-.-------------------------------------------.
-|		Opcode	  Flags		    |
-|  Instruction	76543210  nvxbdizc  Cycles  |
-|  ---------------------------------------  |
-|  nop		<  EA  >  ........  2	    |
-|  rti		<  40  >  ********  6	    |
-|  brk		<  00  >  .....1..  7	    |
-'------------------------------------------*/
+.------------------------------------------.
+|	       Opcode	 Flags		   |
+|  Assembly    76543210  nvxbdizc  Cycles  |
+|  --------------------------------------  |
+|  nop	       <  EA  >  ........  2	   |
+|  rti	       <  40  >  ********  6	   |
+|  brk	       <  00  >  .....1..  7	   |
+'-----------------------------------------*/
 
 INSTRUCTION(nop) {PC++;			  return 2;}
 INSTRUCTION(rti) {P = POP_8; PC = POP_16; return 6;}
