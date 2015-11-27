@@ -34,14 +34,14 @@ typedef struct {
 	zboolean   irq;
 
 #	ifdef CPU_6502_USE_SLOTS
-		struct {ZSlot(Z16BitAddressRead8Bit ) read;
-			ZSlot(Z16BitAddressWrite8Bit) write;
+		struct {ZSlot(ZContext16BitAddressRead8Bit ) read;
+			ZSlot(ZContext16BitAddressWrite8Bit) write;
 		} cb;
 #	else
 		void* cb_context;
 
-		struct {Z16BitAddressRead8Bit  read;
-			Z16BitAddressWrite8Bit write;
+		struct {ZContext16BitAddressRead8Bit  read;
+			ZContext16BitAddressWrite8Bit write;
 		} cb;
 #	endif
 } M6502;
