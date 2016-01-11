@@ -537,7 +537,7 @@ INSTRUCTION(adc_J)
 		if (~(A ^ v) & (A ^ t) & NP) P |= VP;
 		if (t >> 8)		     P |= CP;
 
-		A = (zuint8) t;
+		A = (zuint8)t;
 		SET_P_NZ(A);
 		}
 
@@ -581,7 +581,7 @@ INSTRUCTION(sbc_J)
 		if ((A ^ v) & (A ^ t) & NP) P |= VP;
 		if (!(t >> 8))		    P |= CP;
 
-		A = (zuint8) t;
+		A = (zuint8)t;
 		SET_P_NZ(A);
 		}
 
