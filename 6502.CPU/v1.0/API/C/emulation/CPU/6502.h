@@ -4,7 +4,7 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999-2015 Manuel Sainz de Baranda y Goñi.
+Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
 #ifndef __emulation_CPU_6502_H__
@@ -15,14 +15,6 @@ Released under the terms of the GNU General Public License v3. */
 
 #ifdef CPU_6502_USE_SLOTS
 #	include <Z/macros/slot.h>
-#endif
-
-#ifndef CPU_6502_API
-#	ifdef CPU_6502_USE_STATIC
-#		define CPU_6502_API
-#	else
-#		define CPU_6502_API Z_API
-#	endif
 #endif
 
 typedef struct {
@@ -48,7 +40,23 @@ typedef struct {
 
 Z_C_SYMBOLS_BEGIN
 
-CPU_6502_API extern ZCPUEmulatorABI const abi_cpu_6502;
+#ifndef CPU_6502_ABI
+#	ifdef CPU_6502_AS_STATIC
+#		define CPU_6502_ABI
+#	else
+#		define CPU_6502_ABI Z_API
+#	endif
+#endif
+
+CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6520;
+
+#ifndef CPU_6502_API
+#	ifdef CPU_6502_AS_STATIC
+#		define CPU_6502_API
+#	else
+#		define CPU_6502_API Z_API
+#	endif
+#endif
 
 CPU_6502_API zsize m6502_run   (M6502*	 object,
 				zsize	 cycles);

@@ -4,13 +4,23 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999-2015 Manuel Sainz de Baranda y Goñi.
+Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#ifdef CPU_6502_BUILDING_DYNAMIC
+#if defined(CPU_6502_HIDE_API)
+#	define CPU_6502_API static
+#elif defined(CPU_6502_AS_DYNAMIC)
 #	define CPU_6502_API Z_API_EXPORT
 #else
 #	define CPU_6502_API
+#endif
+
+#if defined(CPU_6502_HIDE_ABI)
+#	define CPU_6502_ABI static
+#elif defined(CPU_6502_AS_DYNAMIC)
+#	define CPU_6502_ABI Z_API_EXPORT
+#else
+#	define CPU_6502_ABI
 #endif
 
 #ifdef CPU_6502_USE_LOCAL_HEADER
@@ -871,9 +881,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 /* MARK: - ABI */
 
-#ifdef CPU_6502_BUILDING_MODULE
-
-	#include <Z/ABIs/emulation.h>
+#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
 
 	static ZEmulatorFunctionExport const exports[5] = {
 		{Z_EMULATOR_ACTION_POWER, (ZEmulatorFunction)m6502_power},
@@ -890,7 +898,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	CPU_6502_API ZCPUEmulatorABI const abi_cpu_6502 = {
+	CPU_6502_ABI ZCPUEmulatorABI const abi_emulation_cpu_6520 = {
 		/* dependency_count	       */ 0,
 		/* dependencies		       */ NULL,
 		/* function_export_count       */ 5,
@@ -901,6 +909,20 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 		/* instance_slot_linkage_count */ 2,
 		/* instance_slot_linkages      */ slot_linkages
 	};
+
+#endif
+
+#ifdef CPU_6502_BUILD_MODULE_ABI
+
+#	include <Z/ABIs/generic/module.h>
+
+	static zcharacter const information[] =
+		"C1999-2016 Manuel Sainz de Baranda y Goñi\n"
+		"LLGPLv3";
+
+	static ZModuleUnit const unit = {"6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6520};
+	static ZModuleDomain const domain = {"emulation/CPU", Z_VERSION(1, 0, 0), 1, &unit};
+	Z_API_WEAK_EXPORT ZModuleABI const __module_abi__ = {1, &domain};
 
 #endif
 
