@@ -9,7 +9,7 @@ Released under the terms of the GNU General Public License v3. */
 
 #if defined(CPU_6502_HIDE_API)
 #	define CPU_6502_API static
-#elif defined(CPU_6502_AS_DYNAMIC)
+#elif defined(CPU_6502_DYNAMIC)
 #	define CPU_6502_API Z_API_EXPORT
 #else
 #	define CPU_6502_API
@@ -17,7 +17,7 @@ Released under the terms of the GNU General Public License v3. */
 
 #if defined(CPU_6502_HIDE_ABI)
 #	define CPU_6502_ABI static
-#elif defined(CPU_6502_AS_DYNAMIC)
+#elif defined(CPU_6502_DYNAMIC)
 #	define CPU_6502_ABI Z_API_EXPORT
 #else
 #	define CPU_6502_ABI
@@ -40,7 +40,7 @@ typedef struct {
 
 typedef struct {
 	zuint8 cycles;
-	zuint8 (* read )(M6502 *object);
+	zuint8 (* read)(M6502 *object);
 } ReadEA;
 
 typedef struct {
@@ -883,31 +883,31 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 #if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
 
-	static ZEmulatorFunctionExport const exports[5] = {
-		{Z_EMULATOR_ACTION_POWER, (ZEmulatorFunction)m6502_power},
-		{Z_EMULATOR_ACTION_RESET, (ZEmulatorFunction)m6502_reset},
-		{Z_EMULATOR_ACTION_RUN,	  (ZEmulatorFunction)m6502_run	},
-		{Z_EMULATOR_ACTION_NMI,	  (ZEmulatorFunction)m6502_nmi	},
-		{Z_EMULATOR_ACTION_INT,	  (ZEmulatorFunction)m6502_irq	}
+	static ZCPUEmulatorExport const exports[5] = {
+		{Z_EMULATOR_FUNCTION_POWER, (ZEmulatorFunction)m6502_power},
+		{Z_EMULATOR_FUNCTION_RESET, (ZEmulatorFunction)m6502_reset},
+		{Z_EMULATOR_FUNCTION_RUN,   (ZEmulatorFunction)m6502_run  },
+		{Z_EMULATOR_FUNCTION_NMI,   (ZEmulatorFunction)m6502_nmi  },
+		{Z_EMULATOR_FUNCTION_INT,   (ZEmulatorFunction)m6502_irq  }
 	};
 
-	#define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
+#	define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
 
-	static ZEmulatorSlotLinkage const slot_linkages[2] = {
-		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_READ_8BIT,  SLOT_OFFSET(read )},
-		{Z_EMULATOR_OBJECT_MEMORY, Z_EMULATOR_ACTION_WRITE_8BIT, SLOT_OFFSET(write)}
+	static ZCPUEmulatorInstanceImport const instance_imports[2] = {
+		{Z_EMULATOR_FUNCTION_READ_8BIT,  SLOT_OFFSET(read )},
+		{Z_EMULATOR_FUNCTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
 	CPU_6502_ABI ZCPUEmulatorABI const abi_emulation_cpu_6520 = {
-		/* dependency_count	       */ 0,
-		/* dependencies		       */ NULL,
-		/* function_export_count       */ 5,
-		/* function_exports	       */ exports,
-		/* instance_size	       */ sizeof(M6502),
-		/* instance_state_offset       */ Z_OFFSET_OF(M6502, state),
-		/* instance_state_size	       */ sizeof(Z6502State),
-		/* instance_slot_linkage_count */ 2,
-		/* instance_slot_linkages      */ slot_linkages
+		/* dependency_count	 */ 0,
+		/* dependencies		 */ NULL,
+		/* export_count		 */ 5,
+		/* exports		 */ exports,
+		/* instance_size	 */ sizeof(M6502),
+		/* instance_state_offset */ Z_OFFSET_OF(M6502, state),
+		/* instance_state_size	 */ sizeof(Z6502State),
+		/* instance_import_count */ 2,
+		/* instance_imports	 */ instance_imports
 	};
 
 #endif
@@ -918,10 +918,10 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 	static zcharacter const information[] =
 		"C1999-2016 Manuel Sainz de Baranda y Goñi\n"
-		"LLGPLv3";
+		"LGPLv3";
 
-	static ZModuleUnit const unit = {"6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6520};
-	static ZModuleDomain const domain = {"emulation/CPU", Z_VERSION(1, 0, 0), 1, &unit};
+	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6520};
+	static ZModuleDomain const domain = {"Emulation.CPU", Z_VERSION(1, 0, 0), 1, &unit};
 	Z_API_WEAK_EXPORT ZModuleABI const __module_abi__ = {1, &domain};
 
 #endif

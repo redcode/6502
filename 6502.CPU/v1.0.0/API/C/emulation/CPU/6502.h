@@ -41,7 +41,7 @@ typedef struct {
 Z_C_SYMBOLS_BEGIN
 
 #ifndef CPU_6502_ABI
-#	ifdef CPU_6502_AS_STATIC
+#	ifdef CPU_6502_STATIC
 #		define CPU_6502_ABI
 #	else
 #		define CPU_6502_ABI Z_API
@@ -51,7 +51,7 @@ Z_C_SYMBOLS_BEGIN
 CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6520;
 
 #ifndef CPU_6502_API
-#	ifdef CPU_6502_AS_STATIC
+#	ifdef CPU_6502_STATIC
 #		define CPU_6502_API
 #	else
 #		define CPU_6502_API Z_API
