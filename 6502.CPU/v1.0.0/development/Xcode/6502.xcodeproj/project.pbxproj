@@ -10,10 +10,10 @@
 		6428A5751AAFC6DF00634F5D /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6428A5771AAFC72900634F5D /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_DYNAMIC"; }; };
 		6428A5801AAFEF1D00634F5D /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; };
-		648C13E91CCE375600C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_DYNAMIC -DCPU_6502_BUILD_MODULE_ABI -DCPU_6502_USE_SLOTS"; }; };
+		648C13E91CCE375600C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_DYNAMIC -DCPU_6502_BUILD_MODULE_ABI"; }; };
 		648C13EC1CCE375600C8DCE1 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		648C13F31CCE376800C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_BUILD_ABI -DCPU_6502_USE_SLOTS"; }; };
-		648C13FC1CCE376B00C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_BUILD_ABI -DCPU_6502_HIDE_API -DCPU_6502_USE_SLOTS"; }; };
+		648C13F31CCE376800C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_BUILD_ABI"; }; };
+		648C13FC1CCE376B00C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_BUILD_ABI -DCPU_6502_HIDE_API"; }; };
 		64F8E3391CD6575D0083A613 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		64F8E33A1CD6575E0083A613 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		64F8E33B1CD6575E0083A613 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };

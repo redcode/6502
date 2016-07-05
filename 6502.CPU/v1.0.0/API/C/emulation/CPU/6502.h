@@ -1,4 +1,4 @@
-/* MOS 6502 CPU Emulator C API
+/* MOS Technology 6502 CPU Emulator C API
   ____    ____    ___ ___     ___
  / __ \  / ___\  / __` __`\  / __`\
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
@@ -48,7 +48,7 @@ Z_C_SYMBOLS_BEGIN
 #	endif
 #endif
 
-CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6520;
+CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
 
 #ifndef CPU_6502_API
 #	ifdef CPU_6502_STATIC

@@ -1,4 +1,4 @@
-/* MOS 6502 CPU Emulator
+/* MOS Technology 6502 CPU Emulator
   ____    ____    ___ ___     ___
  / __ \  / ___\  / __` __`\  / __`\
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
@@ -7,23 +7,29 @@
 Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#if defined(CPU_6502_HIDE_API)
+#define DEFINED(WHAT) (defined CPU_6502_##WHAT)
+
+#if !DEFINED(USE_SLOTS) && (DEFINED(BUILD_ABI) || DEFINED(BUILD_MODULE_ABI))
+#	define CPU_6502_USE_SLOTS
+#endif
+
+#if DEFINED(HIDE_API)
 #	define CPU_6502_API static
-#elif defined(CPU_6502_DYNAMIC)
+#elif DEFINED(DYNAMIC)
 #	define CPU_6502_API Z_API_EXPORT
 #else
 #	define CPU_6502_API
 #endif
 
-#if defined(CPU_6502_HIDE_ABI)
+#if DEFINED(HIDE_ABI)
 #	define CPU_6502_ABI static
-#elif defined(CPU_6502_DYNAMIC)
+#elif DEFINED(DYNAMIC)
 #	define CPU_6502_ABI Z_API_EXPORT
 #else
 #	define CPU_6502_ABI
 #endif
 
-#ifdef CPU_6502_USE_LOCAL_HEADER
+#if DEFINED(USE_LOCAL_HEADER)
 #	include "6502.h"
 #else
 #	include <emulation/CPU/6502.h>
@@ -863,25 +869,39 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 
 CPU_6502_API void m6502_reset(M6502 *object)
 	{
-	PC = 0; //READ_POINTER(RESET);
-	S = 0xFF;
-	P = IP;
-	A = 0;
-	X = 0;
-	Y = 0;
+	PC = READ_POINTER(RESET);
+	S = Z_6502_S_VALUE_AFTER_POWER_ON;
+	P = Z_6502_P_VALUE_AFTER_POWER_ON;
 	IRQ = FALSE;
 	NMI = FALSE;
 	}
 
 
-CPU_6502_API void m6502_power(M6502 *object, zboolean state) {if (state) m6502_reset(object);}
-CPU_6502_API void m6502_nmi  (M6502 *object)		     {NMI = TRUE ;}
-CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
+CPU_6502_API void m6502_power(M6502 *object, zboolean state)
+	{
+	if (state)
+		{
+		PC = Z_6502_PC_VALUE_AFTER_POWER_ON;
+		S  = Z_6502_S_VALUE_AFTER_POWER_ON;
+		P  = Z_6502_P_VALUE_AFTER_POWER_ON;
+		A  = Z_6502_A_VALUE_AFTER_POWER_ON;
+		X  = Z_6502_X_VALUE_AFTER_POWER_ON;
+		Y  = Z_6502_Y_VALUE_AFTER_POWER_ON;
+		IRQ = FALSE;
+		NMI = FALSE;
+		}
+	
+	else PC = S = P = A = X = Y = IRQ = NMI = 0;
+	}
+
+
+CPU_6502_API void m6502_nmi(M6502 *object)		   {NMI = TRUE ;}
+CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 
 /* MARK: - ABI */
 
-#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
+#if DEFINED(BUILD_ABI) || DEFINED(BUILD_MODULE_ABI)
 
 	static ZCPUEmulatorExport const exports[5] = {
 		{Z_EMULATOR_FUNCTION_POWER, (ZEmulatorFunction)m6502_power},
@@ -898,7 +918,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 		{Z_EMULATOR_FUNCTION_WRITE_8BIT, SLOT_OFFSET(write)}
 	};
 
-	CPU_6502_ABI ZCPUEmulatorABI const abi_emulation_cpu_6520 = {
+	CPU_6502_ABI ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
 		/* dependency_count	 */ 0,
 		/* dependencies		 */ NULL,
 		/* export_count		 */ 5,
@@ -912,7 +932,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 
 #endif
 
-#ifdef CPU_6502_BUILD_MODULE_ABI
+#if DEFINED(BUILD_MODULE_ABI)
 
 #	include <Z/ABIs/generic/module.h>
 
@@ -920,7 +940,7 @@ CPU_6502_API void m6502_irq  (M6502 *object, zboolean state) {IRQ = state;}
 		"C1999-2016 Manuel Sainz de Baranda y Goñi\n"
 		"LGPLv3";
 
-	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6520};
+	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6502};
 	static ZModuleDomain const domain = {"Emulation.CPU", Z_VERSION(1, 0, 0), 1, &unit};
 	Z_API_WEAK_EXPORT ZModuleABI const __module_abi__ = {1, &domain};
 
