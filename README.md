@@ -119,7 +119,7 @@ void m6502_irq(M6502 *object, zboolean state);
 
 ## Callbacks
 
-Before using an instance of the 6502 emulator, its `cb` structure must be initialized with the pointers to the callbacks that your program must provide in order to make possible for the CPU to access the emulated machine's resources.
+Before using an instance of the 6502 emulator, its `cb` structure must be initialized with the pointers to the callbacks that your program must provide in order to make possible for the CPU to access the emulated machine's memory.
 
 #### `read` 
 
