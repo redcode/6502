@@ -96,7 +96,7 @@ Performs a non-maskable interrupt. This is equivalent to a pulse in the `NMI` li
 
 **Prototype**  
 ```C
-void m6502_nmi(Z80 *object);
+void m6502_nmi(M6502 *object);
 ```
 
 **Parameters**  
