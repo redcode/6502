@@ -102,7 +102,7 @@ void m6502_nmi(M6502 *object);
 **Parameters**  
 `object` → A pointer to an emulator instance.  
 
-#### `m6502_irg`
+#### `m6502_irq`
 
 **Description**  
 Switchs the state of the maskable interrupt. This is equivalent to a change in the `IRQ` line of a real 6502 CPU.   
