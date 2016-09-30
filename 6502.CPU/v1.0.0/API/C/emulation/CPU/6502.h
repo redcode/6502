@@ -10,7 +10,7 @@ Released under the terms of the GNU General Public License v3. */
 #ifndef __emulation_CPU_6502_H__
 #define __emulation_CPU_6502_H__
 
-#include <Z/hardware/CPU/architecture/650x.h>
+#include <Z/hardware/CPU/architecture/6502.h>
 #include <Z/ABIs/generic/emulation.h>
 
 #ifdef CPU_6502_USE_SLOTS

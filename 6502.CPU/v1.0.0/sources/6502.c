@@ -7,29 +7,27 @@
 Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#define DEFINED(WHAT) (defined CPU_6502_##WHAT)
-
-#if !DEFINED(USE_SLOTS) && (DEFINED(BUILD_ABI) || DEFINED(BUILD_MODULE_ABI))
+#if !defined(CPU_6502_USE_SLOTS) && (defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI))
 #	define CPU_6502_USE_SLOTS
 #endif
 
-#if DEFINED(HIDE_API)
+#if defined(CPU_6502_HIDE_API)
 #	define CPU_6502_API static
-#elif DEFINED(DYNAMIC)
+#elif defined(CPU_6502_DYNAMIC)
 #	define CPU_6502_API Z_API_EXPORT
 #else
 #	define CPU_6502_API
 #endif
 
-#if DEFINED(HIDE_ABI)
+#if defined(CPU_6502_HIDE_ABI)
 #	define CPU_6502_ABI static
-#elif DEFINED(DYNAMIC)
+#elif defined(CPU_6502_DYNAMIC)
 #	define CPU_6502_ABI Z_API_EXPORT
 #else
 #	define CPU_6502_ABI
 #endif
 
-#if DEFINED(USE_LOCAL_HEADER)
+#if defined(CPU_6502_USE_LOCAL_HEADER)
 #	include "6502.h"
 #else
 #	include <emulation/CPU/6502.h>
@@ -870,8 +868,8 @@ CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
 CPU_6502_API void m6502_reset(M6502 *object)
 	{
 	PC = READ_POINTER(RESET);
-	S = Z_6502_S_VALUE_AFTER_POWER_ON;
-	P = Z_6502_P_VALUE_AFTER_POWER_ON;
+	S = Z_6502_VALUE_AFTER_POWER_ON_S;
+	P = Z_6502_VALUE_AFTER_POWER_ON_P;
 	IRQ = FALSE;
 	NMI = FALSE;
 	}
@@ -881,12 +879,12 @@ CPU_6502_API void m6502_power(M6502 *object, zboolean state)
 	{
 	if (state)
 		{
-		PC = Z_6502_PC_VALUE_AFTER_POWER_ON;
-		S  = Z_6502_S_VALUE_AFTER_POWER_ON;
-		P  = Z_6502_P_VALUE_AFTER_POWER_ON;
-		A  = Z_6502_A_VALUE_AFTER_POWER_ON;
-		X  = Z_6502_X_VALUE_AFTER_POWER_ON;
-		Y  = Z_6502_Y_VALUE_AFTER_POWER_ON;
+		PC = Z_6502_VALUE_AFTER_POWER_ON_PC;
+		S  = Z_6502_VALUE_AFTER_POWER_ON_S;
+		P  = Z_6502_VALUE_AFTER_POWER_ON_P;
+		A  = Z_6502_VALUE_AFTER_POWER_ON_A;
+		X  = Z_6502_VALUE_AFTER_POWER_ON_X;
+		Y  = Z_6502_VALUE_AFTER_POWER_ON_Y;
 		IRQ = FALSE;
 		NMI = FALSE;
 		}
@@ -901,14 +899,14 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 /* MARK: - ABI */
 
-#if DEFINED(BUILD_ABI) || DEFINED(BUILD_MODULE_ABI)
+#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
 
 	static ZCPUEmulatorExport const exports[5] = {
 		{Z_EMULATOR_FUNCTION_POWER, (ZEmulatorFunction)m6502_power},
 		{Z_EMULATOR_FUNCTION_RESET, (ZEmulatorFunction)m6502_reset},
 		{Z_EMULATOR_FUNCTION_RUN,   (ZEmulatorFunction)m6502_run  },
 		{Z_EMULATOR_FUNCTION_NMI,   (ZEmulatorFunction)m6502_nmi  },
-		{Z_EMULATOR_FUNCTION_INT,   (ZEmulatorFunction)m6502_irq  }
+		{Z_EMULATOR_FUNCTION_IRQ,   (ZEmulatorFunction)m6502_irq  }
 	};
 
 #	define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
@@ -932,7 +930,7 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 #endif
 
-#if DEFINED(BUILD_MODULE_ABI)
+#if defined(CPU_6502_BUILD_MODULE_ABI)
 
 #	include <Z/ABIs/generic/module.h>
 
