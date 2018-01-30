@@ -337,7 +337,7 @@ static ReadWriteEA const q_table[8] = {
 
 /* MARK: - Macros: Addressing Accessors */
 
-#define SET_EA(type, table) type const *ea = &table##_table[(OPCODE & 28) >> 2];
+#define SET_EA(type, table) type const *ea = &table##_table[(OPCODE & 28) >> 2]
 #define J		    SET_EA(ReadEA,	j)
 #define K		    SET_EA(WriteEA,	k)
 #define G		    SET_EA(ReadEA,	g)
@@ -383,7 +383,7 @@ static ReadWriteEA const q_table[8] = {
 
 
 #define BRANCH_IF_CLEAR(flag_mask) BRANCH(flag_mask, !)
-#define BRANCH_IF_SET(  flag_mask) BRANCH(flag_mask,  )
+#define BRANCH_IF_SET(  flag_mask) BRANCH(flag_mask, Z_EMPTY)
 
 
 #define INC_DEC(operation)		\

@@ -20,7 +20,7 @@ typedef struct {
 	zuint16	   g_ea;
 	zboolean   nmi;
 	zboolean   irq;
-	void*	   callback_context;;
+	void*	   callback_context;
 
 	ZContext16BitAddressRead8Bit  read;
 	ZContext16BitAddressWrite8Bit write;
