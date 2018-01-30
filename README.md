@@ -18,50 +18,27 @@ A Xcode project is provided to build the emulator. It has the following targets:
 Name | Description
 --- | ---
 dynamic | Shared library.
-module  | Module for A.C.M.E.
+dynamic module  | Shared library with a module ABI to be used in modular multi-machine emulators.
 static | Static library.
-static+ABI | Static library with a descriptive ABI to be used in modular multi-machine emulators. Building the ABI implies callback pointers with slots enabled.
-static+ABI-API | The same as above but exposing only the symbol of the ABI, the API functions will be private.
+static module | Static library with a descriptive ABI to be used in monolithic multi-machine emulators.
 
 #### Constants used in 6502.h
 
 Name | Description
 --- | ---
 CPU_6502_STATIC | You need to define this if you are using the emulator as a static library or if you have added its sources to your project.
-CPU_6502_USE_SLOTS | Always needed when using the ABI. Each callback function will have its own context pointer, which should store the address of the object assigned to the call.
 
 #### Constants used in 6502.c
 Name | Description
 --- | ---
-CPU_6502_DYNAMIC | Needed to build a shared library. Exports the public symbols.
-CPU_6502_BUILD_ABI | Builds the ABI of type `ZCPUEmulatorABI` declared in the header with the identifier `abi_emulation_cpu_6502`.
-CPU_6502_BUILD_MODULE_ABI | Builds a generic module ABI of type `ZModuleABI`. This constant enables `CPU_6502_BUILD_ABI` automatically so `abi_emulation_cpu_6502` will be build too. This option is intended to be used when building a true module loadable at runtime with `dlopen()`, `LoadLibrary()` or similar. The module ABI can be accessed retrieving the **weak** symbol `__module_abi__`.
+CPU_6502_BUILD_ABI | Builds the ABI of type `ZCPUEmulatorABI` declared in the header with the identifier `abi_emulation_cpu_z80`.
+CPU_6502_BUILD_MODULE_ABI | Builds a generic module ABI of type `ZModuleABI`. This constant enables `CPU_6502_BUILD_ABI` automatically so `abi_emulation_cpu_z80` will be build too. This option is intended to be used when building a true module loadable at runtime with `dlopen()`, `LoadLibrary()` or similar. The module ABI can be accessed retrieving the **weak** symbol `__module_abi__`.
 CPU_6502_HIDE_API | Makes the API functions private.
 CPU_6502_HIDE_ABI | Makes the `abi_emulation_cpu_6502` private.
 CPU_6502_USE_LOCAL_HEADER | Use this if you have imported _6502.h_ and _6502.c_ to your project. _6502.c_ will include `"6502.h"` instead of `<emulation/CPU/6502.h>`.
 
 
 ## API
-
-#### `m6502_run`
-
-**Description**  
-Runs the CPU for the given number of ```cycles```.   
-
-**Prototype**  
-```C
-zsize m6502_run(M6502 *object, zsize cycles);
-```
-
-**Parameters**  
-`object` → A pointer to an emulator instance.  
-`cycles` → The number of cycles to be executed.  
-
-**Return value**  
-The number of cycles executed.   
-
-**Discusion**  
-Given the fact that one 6502 instruction needs between 2 and 7 cycles to be executed, it is not always possible to run the CPU the exact number of cycles specfified.   
 
 #### `m6502_power`
 
@@ -88,6 +65,26 @@ void m6502_reset(M6502 *object);
 
 **Parameters**  
 `object` → A pointer to an emulator instance.  
+
+#### `m6502_run`
+
+**Description**  
+Runs the CPU for the given number of ```cycles```.   
+
+**Prototype**  
+```C
+zusize m6502_run(M6502 *object, zusize cycles);
+```
+
+**Parameters**  
+`object` → A pointer to an emulator instance.  
+`cycles` → The number of cycles to be executed.  
+
+**Return value**  
+The number of cycles executed.   
+
+**Discusion**  
+Given the fact that one 6502 instruction needs between 2 and 7 cycles to be executed, it is not always possible to run the CPU the exact number of cycles specfified.   
 
 #### `m6502_nmi`
 
@@ -119,7 +116,7 @@ void m6502_irq(M6502 *object, zboolean state);
 
 ## Callbacks
 
-Before using an instance of the 6502 emulator, its `cb` structure must be initialized with the pointers to the callbacks that your program must provide in order to make possible for the CPU to access the emulated machine's memory.
+Before using an instance of the 6502 emulator, its callback pointers must be initialized with the pointers to the functions that your program must provide in order to make possible for the CPU to access the emulated machine's resources.
 
 #### `read` 
 
@@ -154,9 +151,3 @@ ZContext16BitAddressWrite8Bit write;
 `context` → A pointer to the calling emulator instance.  
 `address` → The memory address to write.  
 `value` → The value to write in `address`.  
-
-
-## History
-
-* __[v1.0.0](http://github.com/redcode/6502/releases/tag/v1.0.0)__ _(2016-09-30)_
-    * Initial release.

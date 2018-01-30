@@ -4,27 +4,23 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
+Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
-
-#if !defined(CPU_6502_USE_SLOTS) && (defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI))
-#	define CPU_6502_USE_SLOTS
-#endif
 
 #if defined(CPU_6502_HIDE_API)
 #	define CPU_6502_API static
-#elif defined(CPU_6502_DYNAMIC)
-#	define CPU_6502_API Z_API_EXPORT
-#else
+#elif defined(CPU_6502_STATIC)
 #	define CPU_6502_API
+#else
+#	define CPU_6502_API Z_API_EXPORT
 #endif
 
 #if defined(CPU_6502_HIDE_ABI)
 #	define CPU_6502_ABI static
-#elif defined(CPU_6502_DYNAMIC)
-#	define CPU_6502_ABI Z_API_EXPORT
-#else
+#elif defined(CPU_6502_STATIC)
 #	define CPU_6502_ABI
+#else
+#	define CPU_6502_ABI Z_API_EXPORT
 #endif
 
 #if defined(CPU_6502_USE_LOCAL_HEADER)
@@ -57,16 +53,8 @@ typedef zuint8 (* Instruction)(M6502 *object);
 
 /* MARK: - Macros & Functions: Callback */
 
-#ifdef CPU_6502_USE_SLOTS
-#	define CB_ACTION(name) object->cb.name.action
-#	define CB_OBJECT(name) object->cb.name.object
-#else
-#	define CB_ACTION(name) object->cb.name
-#	define CB_OBJECT(name) object->cb_context
-#endif
-
-#define READ_8(address)		CB_ACTION(read )(CB_OBJECT(read ), (address))
-#define WRITE_8(address, value)	CB_ACTION(write)(CB_OBJECT(write), (address), (value))
+#define READ_8(address)		object->read (object->callback_context, (address))
+#define WRITE_8(address, value)	object->write(object->callback_context, (address), (value))
 
 
 Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
@@ -381,7 +369,7 @@ static ReadWriteEA const q_table[8] = {
 	if (condition_logic(P & flag_mask))	 \
 		{				 \
 		zuint16 pc = PC + 2;		 \
-		zint8 offset = READ_8(PC + 1);	 \
+		zsint8 offset = READ_8(PC + 1);	 \
 		zuint16 t = pc + offset;	 \
 						 \
 		if (t >> 8 == pc >> 8) cycles++; \
@@ -809,7 +797,7 @@ static Instruction const instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
-CPU_6502_API zsize m6502_run(M6502 *object, zsize cycles)
+CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles)
 	{
 	/*-------------.
 	| Clear cycles |
@@ -909,11 +897,9 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 		{Z_EMULATOR_FUNCTION_IRQ,   (ZEmulatorFunction)m6502_irq  }
 	};
 
-#	define SLOT_OFFSET(name) Z_OFFSET_OF(M6502, cb.name)
-
 	static ZCPUEmulatorInstanceImport const instance_imports[2] = {
-		{Z_EMULATOR_FUNCTION_READ_8BIT,  SLOT_OFFSET(read )},
-		{Z_EMULATOR_FUNCTION_WRITE_8BIT, SLOT_OFFSET(write)}
+		{Z_EMULATOR_FUNCTION_READ_8BIT,  Z_OFFSET_OF(M6502, read )},
+		{Z_EMULATOR_FUNCTION_WRITE_8BIT, Z_OFFSET_OF(M6502, write)}
 	};
 
 	CPU_6502_ABI ZCPUEmulatorABI const abi_emulation_cpu_6502 = {
@@ -934,11 +920,7 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 #	include <Z/ABIs/generic/module.h>
 
-	static zcharacter const information[] =
-		"C1999-2016 Manuel Sainz de Baranda y Goñi\n"
-		"LGPLv3";
-
-	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(1, 0, 0), information, &abi_emulation_cpu_6502};
+	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(0, 1, 0), &abi_emulation_cpu_6502};
 	static ZModuleDomain const domain = {"Emulation.CPU", Z_VERSION(1, 0, 0), 1, &unit};
 	Z_API_WEAK_EXPORT ZModuleABI const __module_abi__ = {1, &domain};
 

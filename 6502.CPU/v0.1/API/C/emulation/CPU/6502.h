@@ -4,7 +4,7 @@
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
 \ \__/\_\ \_____\ \_\ \_\ \_\ \____\
  \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
-Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.
+Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
 #ifndef __emulation_CPU_6502_H__
@@ -13,29 +13,17 @@ Released under the terms of the GNU General Public License v3. */
 #include <Z/hardware/CPU/architecture/6502.h>
 #include <Z/ABIs/generic/emulation.h>
 
-#ifdef CPU_6502_USE_SLOTS
-#	include <Z/macros/slot.h>
-#endif
-
 typedef struct {
-	zsize	   cycles;
+	zusize	   cycles;
 	Z6502State state;
 	zuint8	   opcode;
 	zuint16	   g_ea;
 	zboolean   nmi;
 	zboolean   irq;
+	void*	   callback_context;;
 
-#	ifdef CPU_6502_USE_SLOTS
-		struct {ZSlot(ZContext16BitAddressRead8Bit ) read;
-			ZSlot(ZContext16BitAddressWrite8Bit) write;
-		} cb;
-#	else
-		void* cb_context;
-
-		struct {ZContext16BitAddressRead8Bit  read;
-			ZContext16BitAddressWrite8Bit write;
-		} cb;
-#	endif
+	ZContext16BitAddressRead8Bit  read;
+	ZContext16BitAddressWrite8Bit write;
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
@@ -58,18 +46,11 @@ CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
 #	endif
 #endif
 
-CPU_6502_API zsize m6502_run   (M6502*	 object,
-				zsize	 cycles);
-
-CPU_6502_API void  m6502_power (M6502*	 object,
-				zboolean state);
-
-CPU_6502_API void  m6502_reset (M6502*	 object);
-
-CPU_6502_API void  m6502_nmi   (M6502*	 object);
-
-CPU_6502_API void  m6502_irq   (M6502*	 object,
-				zboolean state);
+CPU_6502_API void   m6502_power(M6502 *object, zboolean state);
+CPU_6502_API void   m6502_reset(M6502 *object);
+CPU_6502_API zusize m6502_run  (M6502 *object, zusize cycles);
+CPU_6502_API void   m6502_nmi  (M6502 *object);
+CPU_6502_API void   m6502_irq  (M6502 *object, zboolean state);
 
 Z_C_SYMBOLS_END
 
