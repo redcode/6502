@@ -1,5 +1,5 @@
 # MOS Technology 6502 CPU Emulator
-Copyright © 1999-2016 Manuel Sainz de Baranda y Goñi.  
+Copyright © 1999-2018 Manuel Sainz de Baranda y Goñi.  
 Released under the terms of the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
 
 This is a very accurate [6502](http://en.wikipedia.org/wiki/MOS_Technology_6502) [emulator](http://en.wikipedia.org/wiki/Emulator) I wrote many years ago. It's very fast and small (although there are faster ones written in assembly), its structure is very clear and the code is commented.
