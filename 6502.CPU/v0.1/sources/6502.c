@@ -119,6 +119,7 @@ Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 	S -= 2;
 	}
 
+
 Z_INLINE zuint16 pop_16bit(M6502 *object)
 	{
 	zuint16 result =
@@ -250,7 +251,7 @@ static WriteEA const k_table[8] = {
 };
 
 
-/* MARK: - G/P Addressing Tables
+/* MARK: - G/H Addressing Tables
 
 		      .---------------------------------------------------------------.
 		      |  000  |  001  |  010  |  011  |  100  |  101  |  110  |  111  |
@@ -351,6 +352,9 @@ static ReadWriteEA const q_table[8] = {
 
 /* MARK: - Macros: Reusable Code */
 
+#define INSTRUCTION(name) static zuint8 name(M6502 *object)
+
+
 #define COMPARE(register)							\
 	zuint8 v = READ_EA;							\
 	zuint8 result = register - v;						\
@@ -393,9 +397,6 @@ static ReadWriteEA const q_table[8] = {
 	WRITE_G_EA(t);			\
 	SET_P_NZ(t);			\
 	return EA_CYCLES;
-
-
-#define INSTRUCTION(name) static zuint8 name(M6502 *object)
 
 
 /* MARK: - Instructions: Load/Store Operations
@@ -797,6 +798,34 @@ static Instruction const instruction_table[256] = {
 
 /* MARK: - Main Functions */
 
+CPU_6502_API void m6502_power(M6502 *object, zboolean state)
+	{
+	if (state)
+		{
+		PC = Z_6502_VALUE_AFTER_POWER_ON_PC;
+		S  = Z_6502_VALUE_AFTER_POWER_ON_S;
+		P  = Z_6502_VALUE_AFTER_POWER_ON_P;
+		A  = Z_6502_VALUE_AFTER_POWER_ON_A;
+		X  = Z_6502_VALUE_AFTER_POWER_ON_X;
+		Y  = Z_6502_VALUE_AFTER_POWER_ON_Y;
+		IRQ = FALSE;
+		NMI = FALSE;
+		}
+	
+	else PC = S = P = A = X = Y = IRQ = NMI = 0;
+	}
+
+
+CPU_6502_API void m6502_reset(M6502 *object)
+	{
+	PC = READ_POINTER(RESET);
+	S = Z_6502_VALUE_AFTER_POWER_ON_S;
+	P = Z_6502_VALUE_AFTER_POWER_ON_P;
+	IRQ = FALSE;
+	NMI = FALSE;
+	}
+
+
 CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles)
 	{
 	/*-------------.
@@ -850,34 +879,6 @@ CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles)
 		}
 
 	return CYCLES;
-	}
-
-
-CPU_6502_API void m6502_reset(M6502 *object)
-	{
-	PC = READ_POINTER(RESET);
-	S = Z_6502_VALUE_AFTER_POWER_ON_S;
-	P = Z_6502_VALUE_AFTER_POWER_ON_P;
-	IRQ = FALSE;
-	NMI = FALSE;
-	}
-
-
-CPU_6502_API void m6502_power(M6502 *object, zboolean state)
-	{
-	if (state)
-		{
-		PC = Z_6502_VALUE_AFTER_POWER_ON_PC;
-		S  = Z_6502_VALUE_AFTER_POWER_ON_S;
-		P  = Z_6502_VALUE_AFTER_POWER_ON_P;
-		A  = Z_6502_VALUE_AFTER_POWER_ON_A;
-		X  = Z_6502_VALUE_AFTER_POWER_ON_X;
-		Y  = Z_6502_VALUE_AFTER_POWER_ON_Y;
-		IRQ = FALSE;
-		NMI = FALSE;
-		}
-	
-	else PC = S = P = A = X = Y = IRQ = NMI = 0;
 	}
 
 
