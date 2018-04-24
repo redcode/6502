@@ -57,7 +57,7 @@ typedef zuint8 (* Instruction)(M6502 *object);
 #define WRITE_8(address, value)	object->write(object->callback_context, (address), (value))
 
 
-Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
+static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 	{return (READ_8(address + 1) << 8) | READ_8(address);}
 
 
@@ -112,7 +112,7 @@ Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 #define POP_8	      READ_8 (Z_6502_ADDRESS_STACK + (zuint8)++S)
 
 
-Z_INLINE void push_16bit(M6502 *object, zuint16 value)
+static Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 	{
 	WRITE_8(Z_6502_ADDRESS_STACK | S, value >> 8);
 	WRITE_8(Z_6502_ADDRESS_STACK | (zuint8)(S - 1), (zuint8)value);
@@ -120,7 +120,7 @@ Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 	}
 
 
-Z_INLINE zuint16 pop_16bit(M6502 *object)
+static Z_INLINE zuint16 pop_16bit(M6502 *object)
 	{
 	zuint16 result =
 	  READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
