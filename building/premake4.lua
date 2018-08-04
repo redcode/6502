@@ -9,7 +9,7 @@ solution "6502"
 		flags {"ExtraWarnings"}
 		files {"../sources/**.c"}
 		includedirs {"../API/C"}
-		--buildoptions {"-std=c89 -pedantic"}
+		--buildoptions {"-std=c89 -pedantic -Wall"}
 
 		configuration "Release*"
 			targetdir "lib/release"
