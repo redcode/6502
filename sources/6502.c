@@ -58,7 +58,7 @@ typedef zuint8 (* Instruction)(M6502 *object);
 
 
 static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
-	{return (READ_8(address + 1) << 8) | READ_8(address);}
+	{return (zuint16)(READ_8(address) | (zuint16)READ_8(address + 1) << 8);}
 
 
 #define READ_16( address)	   read_16bit (object, address)
