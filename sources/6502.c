@@ -577,10 +577,7 @@ INSTRUCTION(sbc_J)
 		A = (l & 0x0F) | (h & 0xF0);
 		}
 
-	else	{
-		zuint16 t = A - v - c;
-
-					    P &= ~(VP | CP);
+	else	{			    P &= ~(VP | CP);
 		if ((A ^ v) & (A ^ t) & NP) P |= VP;
 		if (!(t >> 8))		    P |= CP;
 
