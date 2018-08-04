@@ -53,15 +53,18 @@ typedef zuint8 (* Instruction)(M6502 *object);
 
 /* MARK: - Macros & Functions: Callback */
 
-#define READ_8(address)		object->read (object->callback_context, (address))
-#define WRITE_8(address, value)	object->write(object->callback_context, (address), (value))
+#define READ_8(address) \
+	object->read (object->callback_context, (zuint16)(address))
+
+#define WRITE_8(address, value) \
+	object->write(object->callback_context, (zuint16)(address), (zuint8)(value))
 
 
 static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 	{return (zuint16)(READ_8(address) | (zuint16)READ_8(address + 1) << 8);}
 
 
-#define READ_16( address)	   read_16bit (object, address)
+#define READ_16( address)	   read_16bit (object, (zuint16)(address))
 #define READ_POINTER(pointer_name) READ_16(Z_6502_ADDRESS_##pointer_name##_POINTER)
 
 
@@ -122,9 +125,9 @@ static Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 
 static Z_INLINE zuint16 pop_16bit(M6502 *object)
 	{
-	zuint16 result =
-	  READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
-	((READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 2))) << 8);
+	zuint16 result = (zuint16)
+	(  READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
+	 ((READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 2))) << 8));
 
 	S += 2;
 	return result;
@@ -355,34 +358,35 @@ static ReadWriteEA const q_table[8] = {
 #define INSTRUCTION(name) static zuint8 name(M6502 *object)
 
 
-#define COMPARE(register)							\
-	zuint8 v = READ_EA;							\
-	zuint8 result = register - v;						\
-										\
-	P =	(P & ~NZCP)	     /* VP, XP, BP, DP, IP unchanged	     */	\
-		| (result & NP)	     /* NP = result.7			     */	\
-		| ZP_ZERO(result)    /* ZP = 1 if result = 0, else ZP = 0    */	\
-		| !!(register >= v); /* CP = 1 if register >= v, else CP = 0 */	\
-										\
+#define COMPARE(register)							  \
+	zuint8 v = READ_EA;							  \
+	zuint8 result = register - v;						  \
+										  \
+	P = (zuint8)								  \
+		((P & ~NZCP)	       /* VP, XP, BP, DP, IP unchanged	       */ \
+		 | (result & NP)       /* NP = result.7			       */ \
+		 | ZP_ZERO(result)     /* ZP = 1 if result = 0, else ZP = 0    */ \
+		 | !!(register >= v)); /* CP = 1 if register >= v, else CP = 0 */ \
+										  \
 	return EA_CYCLES;
 
 
-#define BRANCH(flag_mask, condition_logic)	 \
-	zuint8 cycles = 2;			 \
-						 \
-	if (condition_logic(P & flag_mask))	 \
-		{				 \
-		zuint16 pc = PC + 2;		 \
-		zsint8 offset = READ_8(PC + 1);	 \
-		zuint16 t = pc + offset;	 \
-						 \
-		if (t >> 8 == pc >> 8) cycles++; \
-		else cycles += 2;		 \
-		PC = t;				 \
-		}				 \
-						 \
-	else PC += 2;				 \
-						 \
+#define BRANCH(flag_mask, condition_logic)		\
+	zuint8 cycles = 2;				\
+							\
+	if (condition_logic(P & flag_mask))		\
+		{					\
+		zuint16 pc = PC + 2;			\
+		zsint8 offset = (zsint8)READ_8(PC + 1); \
+		zuint16 t = (zuint16)(pc + offset);	\
+							\
+		if (t >> 8 == pc >> 8) cycles++;	\
+		else cycles += 2;			\
+		PC = t;					\
+		}					\
+							\
+	else PC += 2;					\
+							\
 	return cycles;
 
 
@@ -636,10 +640,10 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 INSTRUCTION(asl_G)
 	{
 	G;
-	zuint v = READ_EA, t = v << 1;
+	zuint8 v = READ_EA, t = (zuint8)(v << 1);
 
 	WRITE_G_EA(t);
-	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7);
+	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
 
@@ -647,10 +651,10 @@ INSTRUCTION(asl_G)
 INSTRUCTION(lsr_G)
 	{
 	G;
-	zuint v = READ_EA, t = v >> 1;
+	zuint8 v = READ_EA, t = v >> 1;
 
 	WRITE_G_EA(t);
-	P = (P & ~NZCP) | ZP_ZERO(t) | (v & CP);
+	P = (zuint8)((P & ~NZCP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}
 
@@ -658,10 +662,10 @@ INSTRUCTION(lsr_G)
 INSTRUCTION(rol_G)
 	{
 	G;
-	zuint v = READ_EA, t = (v << 1) | (P & CP);
+	zuint8 v = READ_EA, t = (zuint8)((v << 1) | (P & CP));
 
 	WRITE_G_EA(t);
-	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7);
+	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
 
@@ -669,10 +673,10 @@ INSTRUCTION(rol_G)
 INSTRUCTION(ror_G)
 	{
 	G;
-	zuint v = READ_EA, t = (v >> 1) | ((P & CP) << 7);
+	zuint8 v = READ_EA, t = (zuint8)((v >> 1) | ((P & CP) << 7));
 
 	WRITE_G_EA(t);
-	P = (P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v & CP);
+	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}
 
