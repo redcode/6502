@@ -111,14 +111,14 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 /* MARK: - Macros & Functions: Stack */
 
-#define PUSH_8(value) WRITE_8(Z_6502_ADDRESS_STACK + (zuint8)S--, value);
-#define POP_8	      READ_8 (Z_6502_ADDRESS_STACK + (zuint8)++S)
+#define PUSH_8(value) WRITE_8(Z_6502_ADDRESS_STACK + S--, value);
+#define POP_8	      READ_8 (Z_6502_ADDRESS_STACK + ++S)
 
 
 static Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 	{
 	WRITE_8(Z_6502_ADDRESS_STACK | S, value >> 8);
-	WRITE_8(Z_6502_ADDRESS_STACK | (zuint8)(S - 1), (zuint8)value);
+	WRITE_8(Z_6502_ADDRESS_STACK | (zuint8)(S - 1), value);
 	S -= 2;
 	}
 
@@ -126,8 +126,8 @@ static Z_INLINE void push_16bit(M6502 *object, zuint16 value)
 static Z_INLINE zuint16 pop_16bit(M6502 *object)
 	{
 	zuint16 result = (zuint16)
-	(  READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
-	 ((READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 2))) << 8));
+	(	    READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 1)) |
+	 (((zuint16)READ_8(Z_6502_ADDRESS_STACK | (zuint8)(S + 2))) << 8));
 
 	S += 2;
 	return result;
@@ -511,38 +511,32 @@ INSTRUCTION(cpy_Q) {Q; COMPARE(Y)}
 INSTRUCTION(adc_J)
 	{
 	J;
-	zuint8 v = READ_EA;
-	zuint8 c = P & CP;
+	zuint8 v = READ_EA, c = P & CP;
 
 	if (P & DP)
 		{
-		zuint16 l = (A & 0x0F) + (v & 0x0F) + c;
-		zuint16 h = (A & 0xF0) + (v & 0xF0);
+		zuint l = (zuint)(A & 0x0F) + (v & 0x0F) + c;
+		zuint h = (zuint)(A & 0xF0) + (v & 0xF0);
 
 		P &= ~(VP | CP | NP | ZP);
 
-		if (!((l + h) & 0xFF)) P |= ZP;
-
-		if (l > 0x09)
-			{
-			h += 0x10;
-			l += 0x06;
-			}
-
-		if (h & 0x80)		     P |= NP;
-		if (~(A ^ v) & (A ^ h) & NP) P |= VP;
-		if (h > 0x90)		     h += 0x60;
-		if (h >> 8)		     P |= CP;
+		if (!((l + h) & 0xFF))	       P |= ZP;
+		if (l > 0x09)		       {h += 0x10; l += 0x06;}
+		if (h & 0x80)		       P |= NP;
+		if (~(A ^ v) & (A ^ h) & 0x80) P |= VP;
+		if (h > 0x90)		       h += 0x60;
+		if (h >> 8)		       P |= CP;
 
 		A = (l & 0x0F) | (h & 0xF0);
 		}
 
 	else	{
-		zuint16 t = A + v + c;
+		zuint t = (zuint)A + v + c;
 
-					     P &= ~(VP | CP);
-		if (~(A ^ v) & (A ^ t) & NP) P |= VP;
-		if (t >> 8)		     P |= CP;
+		P &= ~(VP | CP);
+
+		if (~(A ^ v) & (A ^ t) & 0x80) P |= VP;
+		if (t >> 8)		       P |= CP;
 
 		A = (zuint8)t;
 		SET_P_NZ(A);
@@ -555,35 +549,31 @@ INSTRUCTION(adc_J)
 INSTRUCTION(sbc_J)
 	{
 	J;
-	zuint8	v = READ_EA;
-	zuint8	c = !(P & CP);
-	zuint16	t = A - v - c;
+	zuint8 v = READ_EA, c = !(P & CP);
+	zuint  t = A - v - c;
 
 	if (P & DP)
 		{
-		int l = (A & 0x0F) - (v & 0x0F) - c;
-		int h = (A & 0xF0) - (v & 0xF0);
-
-		if (l & 0x10)
-			{
-			l -= 6;
-			h--;
-			}
+		zuint l = (zuint)(A & 0x0F) - (v & 0x0F) - c;
+		zuint h = (zuint)(A & 0xF0) - (v & 0xF0);
 
 		P &= ~(VP | CP | ZP | NP);
 
-		if ((A ^ v) & (A ^ t) & NP) P |= VP;
-		if (!(t >> 8))		    P |= CP;
-		if (!(t << 8))		    P |= ZP;
-		if (t & 0x80)		    P |= NP;
-		if (h & 0x0100)		    h -= 0x60;
+		if (l & 0x10)		      {l -= 6; h--;}
+		if ((A ^ v) & (A ^ t) & 0x80) P |= VP;
+		if (!(t >> 8))		      P |= CP;
+		if (!(t << 8))		      P |= ZP;
+		if (t & 0x80)		      P |= NP;
+		if (h & 0x0100)		      h -= 0x60;
 
 		A = (l & 0x0F) | (h & 0xF0);
 		}
 
-	else	{			    P &= ~(VP | CP);
-		if ((A ^ v) & (A ^ t) & NP) P |= VP;
-		if (!(t >> 8))		    P |= CP;
+	else	{
+		P &= ~(VP | CP);
+
+		if ((A ^ v) & (A ^ t) & 0x80) P |= VP;
+		if (!(t >> 8))		      P |= CP;
 
 		A = (zuint8)t;
 		SET_P_NZ(A);
@@ -624,17 +614,6 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 |  rol G       001ggg10  n.....z*  G	   |
 |  ror G       011ggg10  n.....z*  G	   |
 '-----------------------------------------*/
-
-/*#define ASL_LSR_ROL_ROR(t_value, c_value)		     \
-	G;						     \
-	zuint8 v = READ_EA, t = t_value;		     \
-							     \
-	P =	(t	? (P & ~(NP | ZP | CP)) | ((t) & NP) \
-			: (P & ~(NP |	   CP)) | ZP)	     \
-		| c_value;				     \
-							     \
-	WRITE_G_EA(t);					     \
-	return EA_CYCLES;*/
 
 
 INSTRUCTION(asl_G)
@@ -809,8 +788,7 @@ CPU_6502_API void m6502_power(M6502 *object, zboolean state)
 		A  = Z_6502_VALUE_AFTER_POWER_ON_A;
 		X  = Z_6502_VALUE_AFTER_POWER_ON_X;
 		Y  = Z_6502_VALUE_AFTER_POWER_ON_Y;
-		IRQ = FALSE;
-		NMI = FALSE;
+		IRQ = NMI = FALSE;
 		}
 	
 	else PC = S = P = A = X = Y = IRQ = NMI = 0;
@@ -822,8 +800,7 @@ CPU_6502_API void m6502_reset(M6502 *object)
 	PC = READ_POINTER(RESET);
 	S = Z_6502_VALUE_AFTER_POWER_ON_S;
 	P = Z_6502_VALUE_AFTER_POWER_ON_P;
-	IRQ = FALSE;
-	NMI = FALSE;
+	IRQ = NMI = FALSE;
 	}
 
 
