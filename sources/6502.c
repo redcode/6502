@@ -661,15 +661,15 @@ INSTRUCTION(ror_G)
 
 
 /* MARK: - Instructions: Jumps & Calls
-.------------------------------------------.
-|	       Opcode	 Flags		   |
-|  Assembly    76543210  nvxbdizc  Cycles  |
-|  --------------------------------------  |
-|  jmp WORD    <  4C  >  ........  3	   |
-|  jmp (WORD)  <  6C  >  ........  5	   |
-|  jsr WORD    <  20  >  ........  6	   |
-|  rts	       <  60  >  ........  6	   |
-'-----------------------------------------*/
+.----------------------------------------------------------.
+|	       0       1       2	 Flags		   |
+|  Assembly    765432107654321076543210  nvxbdizc  Cycles  |
+|  ------------------------------------------------------  |
+|  jmp WORD    <  4C  ><     WORD     >  ........  3	   |
+|  jmp (WORD)  <  6C  ><     WORD     >  ........  5	   |
+|  jsr WORD    <  20  ><     WORD     >  ........  6	   |
+|  rts	       <  60  >			 ........  6	   |
+'---------------------------------------------------------*/
 
 INSTRUCTION(jmp_WORD)  {PC = READ_16(PC + 1);		       return 3;}
 INSTRUCTION(jmp_vWORD) {PC = READ_16(READ_16(PC + 1));	       return 5;}
@@ -678,19 +678,19 @@ INSTRUCTION(rts)       {PC = POP_16 + 1;		       return 6;}
 
 
 /* MARK: - Instructions: Branches
-.---------------------------------------------.
-|	       Opcode	 Flags		      |
-|  Assembly    76543210  nvxbdizc  Cycles     |
-|  -----------------------------------------  |
-|  bcc OFFSET  <  90  >  ........  2 / 3 / 4  |
-|  bcs OFFSET  <  B0  >  ........  2 / 3 / 4  |
-|  beq OFFSET  <  F0  >  ........  2 / 3 / 4  |
-|  bmi OFFSET  <  30  >  ........  2 / 3 / 4  |
-|  bne OFFSET  <  D0  >  ........  2 / 3 / 4  |
-|  bpl OFFSET  <  10  >  ........  2 / 3 / 4  |
-|  bvc OFFSET  <  50  >  ........  2 / 3 / 4  |
-|  bvs OFFSET  <  70  >  ........  2 / 3 / 4  |
-'--------------------------------------------*/
+.-----------------------------------------------------.
+|	       0       1	 Flags		      |
+|  Assembly    7654321076543210  nvxbdizc  Cycles     |
+|  -------------------------------------------------  |
+|  bcc OFFSET  <  90  ><OFFSET>  ........  2 / 3 / 4  |
+|  bcs OFFSET  <  B0  ><OFFSET>  ........  2 / 3 / 4  |
+|  beq OFFSET  <  F0  ><OFFSET>  ........  2 / 3 / 4  |
+|  bmi OFFSET  <  30  ><OFFSET>  ........  2 / 3 / 4  |
+|  bne OFFSET  <  D0  ><OFFSET>  ........  2 / 3 / 4  |
+|  bpl OFFSET  <  10  ><OFFSET>  ........  2 / 3 / 4  |
+|  bvc OFFSET  <  50  ><OFFSET>  ........  2 / 3 / 4  |
+|  bvs OFFSET  <  70  ><OFFSET>  ........  2 / 3 / 4  |
+'----------------------------------------------------*/
 
 INSTRUCTION(bcc_OFFSET) {BRANCH_IF_CLEAR(CP);}
 INSTRUCTION(bcs_OFFSET) {BRANCH_IF_SET	(CP);}
