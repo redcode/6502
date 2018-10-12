@@ -7,8 +7,8 @@
 Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 Released under the terms of the GNU General Public License v3. */
 
-#ifndef __emulation_CPU_6502_H__
-#define __emulation_CPU_6502_H__
+#ifndef _emulation_CPU_6502_H_
+#define _emulation_CPU_6502_H_
 
 #include <Z/hardware/CPU/architecture/6502.h>
 #include <Z/ABIs/generic/emulation.h>
@@ -54,4 +54,4 @@ CPU_6502_API void   m6502_irq  (M6502 *object, zboolean state);
 
 Z_C_SYMBOLS_END
 
-#endif /* __emulation_CPU_6502_H__ */
+#endif /* _emulation_CPU_6502_H_ */
