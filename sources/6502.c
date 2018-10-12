@@ -82,7 +82,6 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 #define NP 128
 #define VP  64
-#define XP  32
 #define BP  16
 #define DP   8
 #define IP   4
