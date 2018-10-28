@@ -868,11 +868,11 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 #if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
 
 	static ZCPUEmulatorExport const exports[5] = {
-		{Z_EMULATOR_FUNCTION_POWER, (ZEmulatorFunction)m6502_power},
-		{Z_EMULATOR_FUNCTION_RESET, (ZEmulatorFunction)m6502_reset},
-		{Z_EMULATOR_FUNCTION_RUN,   (ZEmulatorFunction)m6502_run  },
-		{Z_EMULATOR_FUNCTION_NMI,   (ZEmulatorFunction)m6502_nmi  },
-		{Z_EMULATOR_FUNCTION_IRQ,   (ZEmulatorFunction)m6502_irq  }
+		{Z_EMULATOR_FUNCTION_POWER, {(void (*)(void))m6502_power}},
+		{Z_EMULATOR_FUNCTION_RESET, {(void (*)(void))m6502_reset}},
+		{Z_EMULATOR_FUNCTION_RUN,   {(void (*)(void))m6502_run  }},
+		{Z_EMULATOR_FUNCTION_NMI,   {(void (*)(void))m6502_nmi  }},
+		{Z_EMULATOR_FUNCTION_IRQ,   {(void (*)(void))m6502_irq  }}
 	};
 
 	static ZCPUEmulatorInstanceImport const instance_imports[2] = {
