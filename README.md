@@ -51,7 +51,7 @@ void m6502_power(M6502 *object, zboolean state);
 ```
 **Parameters**  
 `object` → A pointer to an emulator instance.  
-`state` → `ON` / `OFF`  
+`state` → `TRUE` for power ON, `FALSE` otherwise.  
 
 #### `m6502_reset`
 
@@ -111,7 +111,7 @@ void m6502_irq(M6502 *object, zboolean state);
 
 **Parameters**  
 `object` → A pointer to an emulator instance.  
-`state` → `ON` = set line high, `OFF` = set line low  
+`state` → `TRUE` = set line high, `FALSE` = set line low  
 
 
 ## Callbacks
@@ -125,8 +125,7 @@ Called when the CPU needs to read 8 bits from memory.
 
 **Prototype**  
 ```C
-typedef zuint8 (* ZContext16BitAddressRead8Bit)(void *context, zuint16 address);
-ZContext16BitAddressRead8Bit read;
+zuint8 (* read )(void *context, zuint16 address);
 ```
 
 **Parameters**  
@@ -143,8 +142,7 @@ Called when the CPU needs to write 8 bits to memory.
 
 **Prototype**  
 ```C
-typedef void (* ZContext16BitAddressWrite8Bit)(void *context, zuint16 address, zuint8 value);
-ZContext16BitAddressWrite8Bit write;
+void (* write)(void *context, zuint16 address, zuint8 value);
 ```
 
 **Parameters**  
