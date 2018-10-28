@@ -1,4 +1,4 @@
-/* MOS Technology 6502 CPU Emulator C API
+/* MOS Technology 6502 CPU Emulator API
   ____    ____    ___ ___     ___
  / __ \  / ___\  / __` __`\  / __`\
 /\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
@@ -22,8 +22,8 @@ typedef struct {
 	zboolean   irq;
 	void*	   callback_context;
 
-	ZContext16BitAddressRead8Bit  read;
-	ZContext16BitAddressWrite8Bit write;
+	zuint8 (* read )(void *context, zuint16 address);
+	void   (* write)(void *context, zuint16 address, zuint8 value);
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
