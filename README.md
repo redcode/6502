@@ -1,3 +1,7 @@
+![al-tag](https://upload.wikimedia.org/wikipedia/commons/4/49/MOS_6502AD_4585_top.jpg)
+
+<br>
+
 # MOS Technology 6502 CPU Emulator
 Copyright © 1999-2018 Manuel Sainz de Baranda y Goñi.  
 Released under the terms of the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
