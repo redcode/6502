@@ -1,14 +1,12 @@
-/* MOS Technology 6502 CPU Emulator
-  ____    ____    ___ ___     ___
- / __ \  / ___\  / __` __`\  / __`\
-/\ \/  \/\ \__/_/\ \/\ \/\ \/\  __/
-\ \__/\_\ \_____\ \_\ \_\ \_\ \____\
- \/_/\/_/\/_____/\/_/\/_/\/_/\/____/
+/* ______   ______   ______   _____
+  /\   _/_ /\  __/_ /\     \ /\__  \
+  \ \  __ \\ \___  \\ \  \  \\/_/  /__
+   \ \_____\\/\_____\\ \_____\ /\_____\
+MOS \/_____/ \/_____/ \/_____/ \/_____/ CPU Emulator
 Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
-Released under the terms of the GNU General Public License v3.
 
 This library  is free software: you  can redistribute it and/or  modify it under
-the terms of  the GNU General Public  License as published by  the Free Software
+the terms of  the GNU General Public License  as published by  the Free Software
 Foundation,  either version  3 of  the License,  or (at  your option)  any later
 version.
 
