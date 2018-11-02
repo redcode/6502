@@ -30,7 +30,7 @@ typedef struct {
 	zuint16	   g_ea;
 	zboolean   nmi;
 	zboolean   irq;
-	void*	   callback_context;
+	void*	   context;
 
 	zuint8 (* read )(void *context, zuint16 address);
 	void   (* write)(void *context, zuint16 address, zuint8 value);

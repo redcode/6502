@@ -64,10 +64,10 @@ typedef zuint8 (* Instruction)(M6502 *object);
 /* MARK: - Macros & Functions: Callback */
 
 #define READ_8(address) \
-	object->read (object->callback_context, (zuint16)(address))
+	object->read (object->context, (zuint16)(address))
 
 #define WRITE_8(address, value) \
-	object->write(object->callback_context, (zuint16)(address), (zuint8)(value))
+	object->write(object->context, (zuint16)(address), (zuint8)(value))
 
 
 static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
