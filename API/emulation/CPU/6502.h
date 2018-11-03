@@ -125,7 +125,7 @@ CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles);
 CPU_6502_API void m6502_nmi(M6502 *object);
 
 /** Changes the state of the maskable interrupt.
-  * @details This is equivalent to a change in the INT line of a real 6502.
+  * @details This is equivalent to a change in the IRQ line of a real 6502.
   * @param object A pointer to a 6502 emulator instance object.
   * @param state @c TRUE = line high; @c FALSE = line low. */
 
