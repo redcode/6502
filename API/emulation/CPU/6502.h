@@ -20,8 +20,11 @@ this library. If not, see <http://www.gnu.org/licenses/>. */
 #ifndef _emulation_CPU_6502_H_
 #define _emulation_CPU_6502_H_
 
-#include <Z/hardware/CPU/architecture/6502.h>
-#include <Z/ABIs/generic/emulation.h>
+#ifdef CPU_6502_DEPENDENCIES_H
+#	include CPU_6502_DEPENDENCIES_H
+#else
+#	include <Z/hardware/CPU/architecture/6502.h>
+#endif
 
 /** 6502 emulator instance object.
   * @details This structure contains the state of the emulated CPU and callback
@@ -78,16 +81,6 @@ typedef struct {
 
 Z_C_SYMBOLS_BEGIN
 
-#ifndef CPU_6502_ABI
-#	ifdef CPU_6502_STATIC
-#		define CPU_6502_ABI
-#	else
-#		define CPU_6502_ABI Z_API
-#	endif
-#endif
-
-CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
-
 #ifndef CPU_6502_API
 #	ifdef CPU_6502_STATIC
 #		define CPU_6502_API
@@ -132,5 +125,27 @@ CPU_6502_API void m6502_nmi(M6502 *object);
 CPU_6502_API void m6502_irq(M6502 *object, zboolean state);
 
 Z_C_SYMBOLS_END
+
+#ifdef CPU_6502_USE_ABI
+
+#	ifndef CPU_6502_DEPENDENCIES_H
+#		include <Z/ABIs/generic/emulation.h>
+#	endif
+
+	Z_C_SYMBOLS_BEGIN
+
+#	ifndef CPU_6502_ABI
+#		ifdef CPU_6502_STATIC
+#			define CPU_6502_ABI
+#		else
+#			define CPU_6502_ABI Z_API
+#		endif
+#	endif
+
+	CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
+
+	Z_C_SYMBOLS_END
+
+#endif
 
 #endif /* _emulation_CPU_6502_H_ */

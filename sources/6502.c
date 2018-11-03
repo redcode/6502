@@ -25,12 +25,18 @@ this library. If not, see <http://www.gnu.org/licenses/>. */
 #	define CPU_6502_API Z_API_EXPORT
 #endif
 
-#if defined(CPU_6502_HIDE_ABI)
-#	define CPU_6502_ABI static
-#elif defined(CPU_6502_STATIC)
-#	define CPU_6502_ABI
-#else
-#	define CPU_6502_ABI Z_API_EXPORT
+#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
+#	ifndef CPU_6502_USE_ABI
+#		define CPU_6502_USE_ABI
+#	endif
+
+#	if defined(CPU_6502_HIDE_ABI)
+#		define CPU_6502_ABI static
+#	elif defined(CPU_6502_STATIC)
+#		define CPU_6502_ABI
+#	else
+#		define CPU_6502_ABI Z_API_EXPORT
+#	endif
 #endif
 
 #if defined(CPU_6502_USE_LOCAL_HEADER)
