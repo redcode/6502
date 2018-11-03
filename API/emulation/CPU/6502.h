@@ -23,17 +23,57 @@ this library. If not, see <http://www.gnu.org/licenses/>. */
 #include <Z/hardware/CPU/architecture/6502.h>
 #include <Z/ABIs/generic/emulation.h>
 
-typedef struct {
-	zusize	   cycles;
-	Z6502State state;
-	zuint8	   opcode;
-	zuint16	   g_ea;
-	zboolean   nmi;
-	zboolean   irq;
-	void*	   context;
+/** 6502 emulator instance object.
+  * @details This structure contains the state of the emulated CPU and callback
+  * pointers necessary to interconnect the emulator with external logic. There
+  * is no constructor function, so, before using an object of this type, some
+  * of its members must be initialized, in particular the following:
+  * @c context, @c read and @c write. */
 
-	zuint8 (* read )(void *context, zuint16 address);
-	void   (* write)(void *context, zuint16 address, zuint8 value);
+typedef struct {
+
+	/** Number of cycles executed in the current call to @c m6502_run.
+	  * @details @c m6502_run sets this variable to 0 before starting to
+	  * execute instructions and its value persists after returning. The
+	  * callbacks can use this variable to know during what cycle they are
+	  * being called. */
+
+	zusize cycles;
+
+	/** The value used as the first argument when calling a callback.
+	  * @details This variable should be initialized before using the
+	  * emulator and can be used to reference the context/instance of
+	  * the machine being emulated. */
+
+	void *context;
+
+	/** CPU registers and internal bits.
+	  * @details It contains the state of the registers and the interrupt
+	  * flags. This is what a debugger should use as its data source. */
+
+	Z6502State state;
+
+	/** Temporary storage for opcode fetching.
+	  * @details This is an internal private variable. */
+
+	zuint8 opcode;
+
+
+	zuint16 g_ea;
+
+	/** Callback: Called when the CPU needs to read 8 bits from memory.
+	  * @param context The value of the member @c context.
+	  * @param address The memory address to read from.
+	  * @return The 8 bits read from memory. */
+
+	zuint8 (* read)(void *context, zuint16 address);
+
+	/** Callback: Called when the CPU needs to write 8 bits to memory.
+	  * @param context The value of the member @c context.
+	  * @param address The memory address to write to.
+	  * @param value The value to write. */
+
+	void (* write)(void *context, zuint16 address, zuint8 value);
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
@@ -56,11 +96,40 @@ CPU_6502_ABI extern ZCPUEmulatorABI const abi_emulation_cpu_6502;
 #	endif
 #endif
 
-CPU_6502_API void   m6502_power(M6502 *object, zboolean state);
-CPU_6502_API void   m6502_reset(M6502 *object);
-CPU_6502_API zusize m6502_run  (M6502 *object, zusize cycles);
-CPU_6502_API void   m6502_nmi  (M6502 *object);
-CPU_6502_API void   m6502_irq  (M6502 *object, zboolean state);
+/** Changes the CPU power status.
+  * @param object A pointer to a 6502 emulator instance object.
+  * @param state @c TRUE = power ON; @c FALSE = power OFF. */
+
+CPU_6502_API void m6502_power(M6502 *object, zboolean state);
+
+/** Resets the CPU.
+  * @details This is equivalent to a pulse in the RESET line of a real 6502.
+  * @param object A pointer to a 6502 emulator instance object. */
+
+CPU_6502_API void m6502_reset(M6502 *object);
+
+/** Runs the CPU for a given number of @p cycles.
+  * @param object A pointer to a 6502 emulator instance object.
+  * @param cycles The number of cycles to be executed.
+  * @return The number of cycles executed.
+  * @note Given the fact that one Z80 instruction needs between 2 and 7 cycles
+  * to be executed, it's not always possible to run the CPU the exact number of
+  * @p cycles specfified. */
+
+CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles);
+
+/** Performs a non-maskable interrupt.
+  * @details This is equivalent to a pulse in the NMI line of a real 6502.
+  * @param object A pointer to a 6502 emulator instance object. */
+
+CPU_6502_API void m6502_nmi(M6502 *object);
+
+/** Changes the state of the maskable interrupt.
+  * @details This is equivalent to a change in the INT line of a real 6502.
+  * @param object A pointer to a 6502 emulator instance object.
+  * @param state @c TRUE = line high; @c FALSE = line low. */
+
+CPU_6502_API void m6502_irq(M6502 *object, zboolean state);
 
 Z_C_SYMBOLS_END
 
