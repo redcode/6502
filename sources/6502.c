@@ -88,6 +88,19 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 #define Y  object->state.Z_6502_STATE_MEMBER_Y
 
 
+/* MARK: - Macros: Internal Bits */
+
+#define NMI    object->state.Z_6502_STATE_MEMBER_NMI
+#define IRQ    object->state.Z_6502_STATE_MEMBER_IRQ
+
+
+/* MARK: - Macros: Temporal Data */
+
+#define CYCLES object->cycles
+#define OPCODE object->opcode
+#define G_EA   object->g_ea
+
+
 /* MARK: - Macros: Flags */
 
 #define NP 128
@@ -103,19 +116,6 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 #define ZP_ZERO( value) (!(value) << 1)
 #define SET_P_NZ(value) P = (P & ~NZP) | ((value) ? ((value) & NP) : ZP)
-
-
-/* MARK: - Macros: Internal State */
-
-#define NMI object->nmi
-#define IRQ object->irq
-
-
-/* MARK: - Macros: Execution Temporal Data */
-
-#define OPCODE object->opcode
-#define G_EA   object->g_ea
-#define CYCLES object->cycles
 
 
 /* MARK: - Macros & Functions: Stack */
