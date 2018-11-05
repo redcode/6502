@@ -313,6 +313,7 @@ static WriteEA const write_h_table[8] = {
 	/* 4 */ write_zero_page_y
 };
 
+
 /* MARK: - Q Addressing Table
 
 		     .-----------------------------------------------.
