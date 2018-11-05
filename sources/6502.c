@@ -104,7 +104,7 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 #define CYCLES object->cycles
 #define OPCODE object->opcode
-#define G_EA   object->g_ea
+#define EA_G   object->ea_g
 
 
 /* MARK: - Macros: Flags */
@@ -177,10 +177,10 @@ EA_READER(zero_page_x)	 {return READ_8(ZERO_PAGE_X_ADDRESS	  );}
 EA_READER(zero_page_y)	 {return READ_8(ZERO_PAGE_Y_ADDRESS	  );}
 EA_READER(absolute)	 {return READ_8(ABSOLUTE_ADDRESS	  );}
 EA_READER(indirect_x)	 {return READ_8(INDIRECT_X_ADDRESS	  );}
-EA_READER(g_zero_page)   {return READ_8(G_EA = ZERO_PAGE_ADDRESS  );}
-EA_READER(g_zero_page_x) {return READ_8(G_EA = ZERO_PAGE_X_ADDRESS);}
-EA_READER(g_absolute)    {return READ_8(G_EA = ABSOLUTE_ADDRESS	  );}
-EA_READER(g_absolute_x)  {return READ_8(G_EA = ABSOLUTE_X_ADDRESS );}
+EA_READER(g_zero_page)   {return READ_8(EA_G = ZERO_PAGE_ADDRESS  );}
+EA_READER(g_zero_page_x) {return READ_8(EA_G = ZERO_PAGE_X_ADDRESS);}
+EA_READER(g_absolute)    {return READ_8(EA_G = ABSOLUTE_ADDRESS	  );}
+EA_READER(g_absolute_x)  {return READ_8(EA_G = ABSOLUTE_X_ADDRESS );}
 
 
 EA_READER(penalized_absolute_x)
@@ -365,7 +365,7 @@ static ReadWriteEA const q_table[8] = {
 #define READ_EA		    ea->read(object)
 #define WRITE_EA(value)	    ea->write(object, value)
 #define EA_CYCLES	    ea->cycles
-#define WRITE_G_EA(value)   if (EA_CYCLES == 2) A = value; else WRITE_8(G_EA, value);
+#define WRITE_EA_G(value)   if (EA_CYCLES == 2) A = value; else WRITE_8(EA_G, value);
 
 
 /* MARK: - Macros: Reusable Code */
@@ -413,7 +413,7 @@ static ReadWriteEA const q_table[8] = {
 	G;				\
 	zuint8 t = READ_EA operation 1;	\
 					\
-	WRITE_G_EA(t);			\
+	WRITE_EA_G(t);			\
 	SET_P_NZ(t);			\
 	return EA_CYCLES;
 
@@ -636,7 +636,7 @@ INSTRUCTION(asl_G)
 	G;
 	zuint8 v = READ_EA, t = (zuint8)(v << 1);
 
-	WRITE_G_EA(t);
+	WRITE_EA_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
@@ -647,7 +647,7 @@ INSTRUCTION(lsr_G)
 	G;
 	zuint8 v = READ_EA, t = v >> 1;
 
-	WRITE_G_EA(t);
+	WRITE_EA_G(t);
 	P = (zuint8)((P & ~NZCP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}
@@ -658,7 +658,7 @@ INSTRUCTION(rol_G)
 	G;
 	zuint8 v = READ_EA, t = (zuint8)((v << 1) | (P & CP));
 
-	WRITE_G_EA(t);
+	WRITE_EA_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
@@ -669,7 +669,7 @@ INSTRUCTION(ror_G)
 	G;
 	zuint8 v = READ_EA, t = (zuint8)((v >> 1) | ((P & CP) << 7));
 
-	WRITE_G_EA(t);
+	WRITE_EA_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}

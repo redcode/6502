@@ -78,7 +78,7 @@ typedef struct {
 	/** Temporary storage for memory addressing.
 	  * @details This is an internal private variable. */
 
-	zuint16 g_ea;
+	zuint16 ea_g;
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
