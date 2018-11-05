@@ -1,8 +1,8 @@
-/*   ____   ______   ______   ____
-    /  _/_ /\  __/_ /\     \ /\_, \
-   /\  __ \\ \___  \\ \  \  \\//  /__
-   \ \_____\\/\_____\\ \_____\/\_____\
-MOS \/_____/ \/_____/ \/_____/\/_____/ CPU Emulator
+/*   ____  ______  ______   ____
+    /  _/_/\  __/_/\     \ /\_, \
+   /\  __ \ \___  \ \  \  \\//  /__
+   \ \_____\/\____/\ \_____\/\_____\
+MOS \/_____/\/___/  \/_____/\/_____/ CPU Emulator
 Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 
 This library  is free software: you  can redistribute it and/or  modify it under
