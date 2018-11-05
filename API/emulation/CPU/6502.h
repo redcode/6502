@@ -50,20 +50,6 @@ typedef struct {
 
 	void *context;
 
-	/** CPU registers and internal bits.
-	  * @details It contains the state of the registers and the interrupt
-	  * flags. This is what a debugger should use as its data source. */
-
-	Z6502State state;
-
-	/** Temporary storage for opcode fetching.
-	  * @details This is an internal private variable. */
-
-	zuint8 opcode;
-
-
-	zuint16 g_ea;
-
 	/** Callback: Called when the CPU needs to read 8 bits from memory.
 	  * @param context The value of the member @c context.
 	  * @param address The memory address to read from.
@@ -77,6 +63,22 @@ typedef struct {
 	  * @param value The value to write. */
 
 	void (* write)(void *context, zuint16 address, zuint8 value);
+
+	/** CPU registers and internal bits.
+	  * @details It contains the state of the registers and the interrupt
+	  * flags. This is what a debugger should use as its data source. */
+
+	Z6502State state;
+
+	/** Temporary storage for memory addressing mode selection.
+	  * @details This is an internal private variable. */
+
+	zuint8 opcode;
+
+	/** Temporary storage for memory addressing.
+	  * @details This is an internal private variable. */
+
+	zuint16 g_ea;
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
@@ -105,19 +107,19 @@ CPU_6502_API void m6502_reset(M6502 *object);
   * @param object A pointer to a 6502 emulator instance object.
   * @param cycles The number of cycles to be executed.
   * @return The number of cycles executed.
-  * @note Given the fact that one Z80 instruction needs between 2 and 7 cycles
+  * @note Given the fact that one 6502 instruction needs between 2 and 7 cycles
   * to be executed, it's not always possible to run the CPU the exact number of
   * @p cycles specfified. */
 
 CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles);
 
-/** Performs a non-maskable interrupt.
+/** Performs a non-maskable interrupt (NMI).
   * @details This is equivalent to a pulse in the NMI line of a real 6502.
   * @param object A pointer to a 6502 emulator instance object. */
 
 CPU_6502_API void m6502_nmi(M6502 *object);
 
-/** Changes the state of the maskable interrupt.
+/** Changes the state of the maskable interrupt (IRQ).
   * @details This is equivalent to a change in the IRQ line of a real 6502.
   * @param object A pointer to a 6502 emulator instance object.
   * @param state @c TRUE = line high; @c FALSE = line low. */
