@@ -48,23 +48,9 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 
 /* MARK: - Types */
 
-typedef struct {
-	zuint8 cycles;
-	zuint8 (* read )(M6502 *object);
-	void   (* write)(M6502 *object, zuint8 value);
-} ReadWriteEA;
-
-typedef struct {
-	zuint8 cycles;
-	zuint8 (* read)(M6502 *object);
-} ReadEA;
-
-typedef struct {
-	zuint8 cycles;
-	void   (* write)(M6502 *object, zuint8 value);
-} WriteEA;
-
 typedef zuint8 (* Instruction)(M6502 *object);
+typedef zuint8 (* ReadEA     )(M6502 *object);
+typedef void   (* WriteEA    )(M6502 *object, zuint8 value);
 
 
 /* MARK: - Macros & Functions: Callback */
@@ -96,15 +82,16 @@ static Z_INLINE zuint16 read_16bit(M6502 *object, zuint16 address)
 
 /* MARK: - Macros: Internal Bits */
 
-#define NMI    object->state.Z_6502_STATE_MEMBER_NMI
-#define IRQ    object->state.Z_6502_STATE_MEMBER_IRQ
+#define NMI object->state.Z_6502_STATE_MEMBER_NMI
+#define IRQ object->state.Z_6502_STATE_MEMBER_IRQ
 
 
 /* MARK: - Macros: Temporal Data */
 
-#define CYCLES object->cycles
-#define OPCODE object->opcode
-#define EA_G   object->ea_g
+#define CYCLES	  object->cycles
+#define OPCODE	  object->opcode
+#define EA	  object->ea
+#define EA_CYCLES object->ea_cycles
 
 
 /* MARK: - Macros: Flags */
@@ -170,24 +157,24 @@ static Z_INLINE zuint16 pop_16bit(M6502 *object)
 #define EA_READER(name) static zuint8 read_##name (M6502 *object)
 #define EA_WRITER(name) static void   write_##name(M6502 *object, zuint8 value)
 
-EA_READER(accumulator)	 {PC++; return A;			    }
-EA_READER(immediate)	 {return READ_BYTE_OPERAND;		    }
-EA_READER(zero_page)	 {return READ_8(ZERO_PAGE_ADDRESS	  );}
-EA_READER(zero_page_x)	 {return READ_8(ZERO_PAGE_X_ADDRESS	  );}
-EA_READER(zero_page_y)	 {return READ_8(ZERO_PAGE_Y_ADDRESS	  );}
-EA_READER(absolute)	 {return READ_8(ABSOLUTE_ADDRESS	  );}
-EA_READER(indirect_x)	 {return READ_8(INDIRECT_X_ADDRESS	  );}
-EA_READER(g_zero_page)   {return READ_8(EA_G = ZERO_PAGE_ADDRESS  );}
-EA_READER(g_zero_page_x) {return READ_8(EA_G = ZERO_PAGE_X_ADDRESS);}
-EA_READER(g_absolute)    {return READ_8(EA_G = ABSOLUTE_ADDRESS	  );}
-EA_READER(g_absolute_x)  {return READ_8(EA_G = ABSOLUTE_X_ADDRESS );}
+EA_READER(accumulator)	 {EA_CYCLES = 2; PC++; return A;			 }
+EA_READER(immediate)	 {EA_CYCLES = 2; return READ_BYTE_OPERAND;		 }
+EA_READER(zero_page)	 {EA_CYCLES = 3; return READ_8(ZERO_PAGE_ADDRESS       );}
+EA_READER(zero_page_x)	 {EA_CYCLES = 4; return READ_8(ZERO_PAGE_X_ADDRESS     );}
+EA_READER(zero_page_y)	 {EA_CYCLES = 4; return READ_8(ZERO_PAGE_Y_ADDRESS     );}
+EA_READER(absolute)	 {EA_CYCLES = 4; return READ_8(ABSOLUTE_ADDRESS	       );}
+EA_READER(indirect_x)	 {EA_CYCLES = 6; return READ_8(INDIRECT_X_ADDRESS      );}
+EA_READER(g_zero_page)   {EA_CYCLES = 5; return READ_8(EA = ZERO_PAGE_ADDRESS  );}
+EA_READER(g_zero_page_x) {EA_CYCLES = 6; return READ_8(EA = ZERO_PAGE_X_ADDRESS);}
+EA_READER(g_absolute)    {EA_CYCLES = 6; return READ_8(EA = ABSOLUTE_ADDRESS   );}
+EA_READER(g_absolute_x)  {EA_CYCLES = 7; return READ_8(EA = ABSOLUTE_X_ADDRESS );}
 
 
 EA_READER(penalized_absolute_x)
 	{
 	zuint16 address = READ_WORD_OPERAND;
 
-	if ((address & 0xFF) + X > 255) CYCLES++;
+	EA_CYCLES = (address & 0xFF) + X > 255 ? 4 + 1 : 4;
 	return READ_8(address + X);
 	}
 
@@ -196,7 +183,7 @@ EA_READER(penalized_absolute_y)
 	{
 	zuint16 address = READ_WORD_OPERAND;
 
-	if ((address & 0xFF) + Y > 255) CYCLES++;
+	EA_CYCLES = (address & 0xFF) + Y > 255 ? 4 + 1 : 4;
 	return READ_8(address + Y);
 	}
 
@@ -205,19 +192,19 @@ EA_READER(penalized_indirect_y)
 	{
 	zuint16 address = READ_16(READ_BYTE_OPERAND);
 
-	if ((address & 0xFF) + Y > 255) CYCLES++;
+	EA_CYCLES = (address & 0xFF) + Y > 255 ? 5 + 1 : 5;
 	return READ_8(address + Y);
 	}
 
 
-EA_WRITER(zero_page)   {WRITE_8(ZERO_PAGE_ADDRESS,   value);}
-EA_WRITER(zero_page_x) {WRITE_8(ZERO_PAGE_X_ADDRESS, value);}
-EA_WRITER(zero_page_y) {WRITE_8(ZERO_PAGE_Y_ADDRESS, value);}
-EA_WRITER(absolute)    {WRITE_8(ABSOLUTE_ADDRESS,    value);}
-EA_WRITER(absolute_x)  {WRITE_8(ABSOLUTE_X_ADDRESS,  value);}
-EA_WRITER(absolute_y)  {WRITE_8(ABSOLUTE_Y_ADDRESS,  value);}
-EA_WRITER(indirect_x)  {WRITE_8(INDIRECT_X_ADDRESS,  value);}
-EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
+EA_WRITER(zero_page)   {EA_CYCLES = 3; WRITE_8(ZERO_PAGE_ADDRESS,   value);}
+EA_WRITER(zero_page_x) {EA_CYCLES = 4; WRITE_8(ZERO_PAGE_X_ADDRESS, value);}
+EA_WRITER(zero_page_y) {EA_CYCLES = 4; WRITE_8(ZERO_PAGE_Y_ADDRESS, value);}
+EA_WRITER(absolute)    {EA_CYCLES = 4; WRITE_8(ABSOLUTE_ADDRESS,    value);}
+EA_WRITER(absolute_x)  {EA_CYCLES = 5; WRITE_8(ABSOLUTE_X_ADDRESS,  value);}
+EA_WRITER(absolute_y)  {EA_CYCLES = 5; WRITE_8(ABSOLUTE_Y_ADDRESS,  value);}
+EA_WRITER(indirect_x)  {EA_CYCLES = 6; WRITE_8(INDIRECT_X_ADDRESS,  value);}
+EA_WRITER(indirect_y)  {EA_CYCLES = 6; WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 
 
 /* MARK: - J/K Addressing Tables
@@ -246,26 +233,26 @@ EA_WRITER(indirect_y)  {WRITE_8(INDIRECT_Y_ADDRESS,  value);}
 | 111 | Absolute,X   | 4+1 | 4+1 | 4+1 | 4+1 |	5  | 4+1 | 4+1 | 4+1 |
 '-------------------------------------------------------------------*/
 
-static ReadEA const j_table[8] = {
-	{6, read_indirect_x	     },
-	{3, read_zero_page	     },
-	{2, read_immediate	     },
-	{4, read_absolute	     },
-	{5, read_penalized_indirect_y},
-	{4, read_zero_page_x	     },
-	{4, read_penalized_absolute_y},
-	{4, read_penalized_absolute_x}
+static ReadEA const read_j_table[8] = {
+	/* 6 */ read_indirect_x,
+	/* 3 */ read_zero_page,
+	/* 2 */ read_immediate,
+	/* 4 */ read_absolute,
+	/* 5 */ read_penalized_indirect_y,
+	/* 4 */ read_zero_page_x,
+	/* 4 */ read_penalized_absolute_y,
+	/* 4 */ read_penalized_absolute_x
 };
 
-static WriteEA const k_table[8] = {
-	{6, write_indirect_x },
-	{3, write_zero_page  },
-	{0, NULL	     },
-	{4, write_absolute   },
-	{6, write_indirect_y },
-	{4, write_zero_page_x},
-	{5, write_absolute_y },
-	{5, write_absolute_x }
+static WriteEA const write_k_table[8] = {
+	/* 6 */ write_indirect_x,
+	/* 3 */ write_zero_page,
+	/* 0 */ NULL,
+	/* 4 */ write_absolute,
+	/* 6 */ write_indirect_y,
+	/* 4 */ write_zero_page_x,
+	/* 5 */ write_absolute_y,
+	/* 5 */ write_absolute_x
 };
 
 
@@ -295,28 +282,36 @@ static WriteEA const k_table[8] = {
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
 
-static ReadEA const g_table[8] = {
-	{0, NULL	      },
-	{5, read_g_zero_page  },
-	{2, read_accumulator  },
-	{6, read_g_absolute   },
-	{0, NULL	      },
-	{6, read_g_zero_page_x},
-	{0, NULL	      },
-	{7, read_g_absolute_x }
+static ReadEA const read_g_table[8] = {
+	/* 0 */ NULL,
+	/* 5 */ read_g_zero_page,
+	/* 2 */ read_accumulator,
+	/* 6 */ read_g_absolute,
+	/* 0 */ NULL,
+	/* 6 */ read_g_zero_page_x,
+	/* 0 */ NULL,
+	/* 7 */ read_g_absolute_x
 };
 
-static ReadWriteEA const h_table[8] = {
-	{2, read_immediate,	       NULL		},
-	{3, read_zero_page,	       write_zero_page	},
-	{0, NULL,		       NULL		},
-	{4, read_absolute,	       write_absolute	},
-	{0, NULL,		       NULL		},
-	{4, read_zero_page_y,	       write_zero_page_y},
-	{0, NULL,		       NULL		},
-	{4, read_penalized_absolute_y, NULL		}
+static ReadEA const read_h_table[8] = {
+	/* 2 */ read_immediate,
+	/* 3 */ read_zero_page,
+	/* 0 */ NULL,
+	/* 4 */ read_absolute,
+	/* 0 */ NULL,
+	/* 4 */ read_zero_page_y,
+	/* 0 */ NULL,
+	/* 4 */ read_penalized_absolute_y
 };
 
+static WriteEA const write_h_table[8] = {
+	/* 2 */ NULL,
+	/* 3 */ write_zero_page,
+	/* 0 */ NULL,
+	/* 4 */ write_absolute,
+	/* 0 */ NULL,
+	/* 4 */ write_zero_page_y
+};
 
 /* MARK: - Q Addressing Table
 
@@ -342,30 +337,38 @@ static ReadWriteEA const h_table[8] = {
 | 111 | Absolute,X   |	   |	 |     |     |	   | 4+1 |     |     |
 '-------------------------------------------------------------------*/
 
-static ReadWriteEA const q_table[8] = {
-	{2, read_immediate,	       NULL		},
-	{3, read_zero_page,	       write_zero_page	},
-	{0, NULL,		       NULL		},
-	{4, read_absolute,	       write_absolute	},
-	{0, NULL,		       NULL		},
-	{4, read_zero_page_x,	       write_zero_page_x},
-	{0, NULL,		       NULL		},
-	{4, read_penalized_absolute_x, NULL		}
+static ReadEA const read_q_table[8] = {
+	/* 2 */ read_immediate,
+	/* 3 */ read_zero_page,
+	/* 0 */ NULL,
+	/* 4 */ read_absolute,
+	/* 0 */ NULL,
+	/* 4 */ read_zero_page_x,
+	/* 0 */ NULL,
+	/* 4 */ read_penalized_absolute_x
+};
+
+static WriteEA const write_q_table[6] = {
+	/* 2 */ NULL,
+	/* 3 */ write_zero_page,
+	/* 0 */ NULL,
+	/* 4 */ write_absolute,
+	/* 0 */ NULL,
+	/* 4 */ write_zero_page_x
 };
 
 
 /* MARK: - Macros: Addressing Accessors */
 
-#define SET_EA(type, table) type const *ea = &table##_table[(OPCODE & 28) >> 2]
-#define J		    SET_EA(ReadEA,	j)
-#define K		    SET_EA(WriteEA,	k)
-#define G		    SET_EA(ReadEA,	g)
-#define H		    SET_EA(ReadWriteEA, h)
-#define Q		    SET_EA(ReadWriteEA, q)
-#define READ_EA		    ea->read(object)
-#define WRITE_EA(value)	    ea->write(object, value)
-#define EA_CYCLES	    ea->cycles
-#define WRITE_EA_G(value)   if (EA_CYCLES == 2) A = value; else WRITE_8(EA_G, value);
+#define EA_INDEX       (OPCODE & 28) >> 2
+#define READ_J	       read_j_table [EA_INDEX](object)
+#define READ_G	       read_g_table [EA_INDEX](object)
+#define READ_H	       read_h_table [EA_INDEX](object)
+#define READ_Q	       read_q_table [EA_INDEX](object)
+#define WRITE_K(value) write_k_table[EA_INDEX](object, value)
+#define WRITE_H(value) write_h_table[EA_INDEX](object, value)
+#define WRITE_Q(value) write_q_table[EA_INDEX](object, value)
+#define WRITE_G(value) if (EA_CYCLES == 2) A = value; else WRITE_8(EA, value);
 
 
 /* MARK: - Macros: Reusable Code */
@@ -373,8 +376,8 @@ static ReadWriteEA const q_table[8] = {
 #define INSTRUCTION(name) static zuint8 name(M6502 *object)
 
 
-#define COMPARE(register)							  \
-	zuint8 v = READ_EA;							  \
+#define COMPARE(register, ea_table)						  \
+	zuint8 v = READ_##ea_table;						  \
 	zuint8 result = register - v;						  \
 										  \
 	P = (zuint8)								  \
@@ -410,10 +413,9 @@ static ReadWriteEA const q_table[8] = {
 
 
 #define INC_DEC(operation)		\
-	G;				\
-	zuint8 t = READ_EA operation 1;	\
+	zuint8 t = READ_G operation 1;	\
 					\
-	WRITE_EA_G(t);			\
+	WRITE_G(t);			\
 	SET_P_NZ(t);			\
 	return EA_CYCLES;
 
@@ -431,12 +433,12 @@ static ReadWriteEA const q_table[8] = {
 |  sty Q       100qqq00  ........  Q	   |
 '-----------------------------------------*/
 
-INSTRUCTION(lda_J) {J; A = READ_EA; SET_P_NZ(A); return EA_CYCLES;}
-INSTRUCTION(ldx_H) {H; X = READ_EA; SET_P_NZ(X); return EA_CYCLES;}
-INSTRUCTION(ldy_Q) {Q; Y = READ_EA; SET_P_NZ(Y); return EA_CYCLES;}
-INSTRUCTION(sta_K) {K; WRITE_EA(A);		 return EA_CYCLES;}
-INSTRUCTION(stx_H) {H; WRITE_EA(X);		 return EA_CYCLES;}
-INSTRUCTION(sty_Q) {Q; WRITE_EA(Y);		 return EA_CYCLES;}
+INSTRUCTION(lda_J) {A = READ_J; SET_P_NZ(A); return EA_CYCLES;}
+INSTRUCTION(ldx_H) {X = READ_H; SET_P_NZ(X); return EA_CYCLES;}
+INSTRUCTION(ldy_Q) {Y = READ_Q; SET_P_NZ(Y); return EA_CYCLES;}
+INSTRUCTION(sta_K) {WRITE_K(A);		     return EA_CYCLES;}
+INSTRUCTION(stx_H) {WRITE_H(X);		     return EA_CYCLES;}
+INSTRUCTION(sty_Q) {WRITE_Q(Y);		     return EA_CYCLES;}
 
 
 /* MARK: - Instructions: Register Transfers
@@ -488,15 +490,14 @@ INSTRUCTION(plp) {PC++; P = POP_8;		return 4;}
 |  bit Q       001qqq00  **....z.  Q	   |
 '-----------------------------------------*/
 
-INSTRUCTION(and_J) {J; A &= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
-INSTRUCTION(eor_J) {J; A ^= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
-INSTRUCTION(ora_J) {J; A |= READ_EA; SET_P_NZ(A); return EA_CYCLES;}
+INSTRUCTION(and_J) {A &= READ_J; SET_P_NZ(A); return EA_CYCLES;}
+INSTRUCTION(eor_J) {A ^= READ_J; SET_P_NZ(A); return EA_CYCLES;}
+INSTRUCTION(ora_J) {A |= READ_J; SET_P_NZ(A); return EA_CYCLES;}
 
 
 INSTRUCTION(bit_Q)
 	{
-	Q;
-	zuint8 v = READ_EA;
+	zuint8 v = READ_Q;
 
 	P =	(P & ~(NP | VP | ZP))
 		| (v & (NP | VP)); /* TODO: Check if this is correct. */
@@ -518,15 +519,14 @@ INSTRUCTION(bit_Q)
 |  sbc J       111jjj01  nv....zc  J	   |
 '-----------------------------------------*/
 
-INSTRUCTION(cmp_J) {J; COMPARE(A)}
-INSTRUCTION(cpx_Q) {Q; COMPARE(X)}
-INSTRUCTION(cpy_Q) {Q; COMPARE(Y)}
+INSTRUCTION(cmp_J) {COMPARE(A, J)}
+INSTRUCTION(cpx_Q) {COMPARE(X, Q)}
+INSTRUCTION(cpy_Q) {COMPARE(Y, Q)}
 
 
 INSTRUCTION(adc_J)
 	{
-	J;
-	zuint8 v = READ_EA, c = P & CP;
+	zuint8 v = READ_J, c = P & CP;
 
 	if (P & DP)
 		{
@@ -563,8 +563,7 @@ INSTRUCTION(adc_J)
 
 INSTRUCTION(sbc_J)
 	{
-	J;
-	zuint8 v = READ_EA, c = !(P & CP);
+	zuint8 v = READ_J, c = !(P & CP);
 	zuint  t = A - v - c;
 
 	if (P & DP)
@@ -633,10 +632,9 @@ INSTRUCTION(dey)   {PC++; Y--; SET_P_NZ(Y); return 2;}
 
 INSTRUCTION(asl_G)
 	{
-	G;
-	zuint8 v = READ_EA, t = (zuint8)(v << 1);
+	zuint8 v = READ_G, t = (zuint8)(v << 1);
 
-	WRITE_EA_G(t);
+	WRITE_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
@@ -644,10 +642,9 @@ INSTRUCTION(asl_G)
 
 INSTRUCTION(lsr_G)
 	{
-	G;
-	zuint8 v = READ_EA, t = v >> 1;
+	zuint8 v = READ_G, t = v >> 1;
 
-	WRITE_EA_G(t);
+	WRITE_G(t);
 	P = (zuint8)((P & ~NZCP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}
@@ -655,10 +652,9 @@ INSTRUCTION(lsr_G)
 
 INSTRUCTION(rol_G)
 	{
-	G;
-	zuint8 v = READ_EA, t = (zuint8)((v << 1) | (P & CP));
+	zuint8 v = READ_G, t = (zuint8)((v << 1) | (P & CP));
 
-	WRITE_EA_G(t);
+	WRITE_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v >> 7));
 	return EA_CYCLES;
 	}
@@ -666,10 +662,9 @@ INSTRUCTION(rol_G)
 
 INSTRUCTION(ror_G)
 	{
-	G;
-	zuint8 v = READ_EA, t = (zuint8)((v >> 1) | ((P & CP) << 7));
+	zuint8 v = READ_G, t = (zuint8)((v >> 1) | ((P & CP) << 7));
 
-	WRITE_EA_G(t);
+	WRITE_G(t);
 	P = (zuint8)((P & ~NZCP) | (t & NP) | ZP_ZERO(t) | (v & CP));
 	return EA_CYCLES;
 	}
