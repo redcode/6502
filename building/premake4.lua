@@ -13,20 +13,21 @@ solution "6502"
 
 		configuration "release*"
 			targetdir "lib/release"
+			flags {"Optimize"}
 
 		configuration "debug*"
-			flags {"Symbols"}
 			targetdir "lib/debug"
+			flags {"Symbols"}
 
 		configuration "*dynamic*"
 			kind "SharedLib"
 
 		configuration "*dynamic-module"
-			defines {"CPU_6502_BUILD_MODULE_ABI"}
+			defines {"CPU_6502_WITH_MODULE_ABI"}
 
 		configuration "*static*"
 			kind "StaticLib"
 			defines {"CPU_6502_STATIC"}
 
 		configuration "*static-module"
-			defines {"CPU_6502_BUILD_ABI"}
+			defines {"CPU_6502_WITH_ABI"}

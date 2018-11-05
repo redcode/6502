@@ -126,7 +126,7 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state);
 
 Z_C_SYMBOLS_END
 
-#ifdef CPU_6502_USE_ABI
+#ifdef CPU_6502_WITH_ABI
 
 #	ifndef CPU_6502_DEPENDENCIES_H
 #		include <Z/ABIs/generic/emulation.h>

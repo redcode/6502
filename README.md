@@ -26,20 +26,19 @@ dynamic module  | Shared library with a module ABI to be used in modular multi-m
 static | Static library.
 static module | Static library with a descriptive ABI to be used in monolithic multi-machine emulators.
 
-#### Constants used in 6502.h
+#### Code configuration
+
+There are some predefined macros that control the compilation:
 
 Name | Description
 --- | ---
-CPU_6502_STATIC | You need to define this if you are using the emulator as a static library or if you have added its sources to your project.
-
-#### Constants used in 6502.c
-Name | Description
---- | ---
-CPU_6502_BUILD_ABI | Builds the ABI of type `ZCPUEmulatorABI` declared in the header with the identifier `abi_emulation_cpu_z80`.
-CPU_6502_BUILD_MODULE_ABI | Builds a generic module ABI of type `ZModuleABI`. This constant enables `CPU_6502_BUILD_ABI` automatically so `abi_emulation_cpu_z80` will be build too. This option is intended to be used when building a true module loadable at runtime with `dlopen()`, `LoadLibrary()` or similar. The module ABI can be accessed retrieving the **weak** symbol `__module_abi__`.
-CPU_6502_HIDE_API | Makes the API functions private.
-CPU_6502_HIDE_ABI | Makes the `abi_emulation_cpu_6502` private.
-CPU_6502_USE_LOCAL_HEADER | Use this if you have imported _6502.h_ and _6502.c_ to your project. _6502.c_ will include `"6502.h"` instead of `<emulation/CPU/6502.h>`.
+`CPU_6502_DEPENDENCIES_H` | If defined, `6502.h` will `#include` only this header as dependency. If you don't want to use Z, you can provide your own header with the types and macros used by the emulator.
+`CPU_6502_HIDE_ABI` | Makes the generic CPU emulator ABI private.
+`CPU_6502_HIDE_API` | Makes the public functions private.
+`CPU_6502_STATIC` | You need to define this to compile or use the emulator as a static library or if you have added `6502.h` and `6502.c` to your project.
+`CPU_6502_USE_LOCAL_HEADER` | Use this if you have imported `6502.h` and `6502.c` to your project. `6502.c` will `#include "6502.h"` instead of `<emulation/CPU/6502.h>`.
+`CPU_6502_WITH_ABI` | Builds the generic CPU emulator ABI and declares its prototype in `6502.h`.
+`CPU_6502_WITH_MODULE_ABI` | Builds the generic module ABI. This macro also enables CPU_6502_BUILD_ABI, so the generic CPU emulator ABI will be built too. This option is intended to be used when building a true module loadable at runtime with `dlopen()`, `LoadLibrary()` or similar. The ABI module can be accessed via the [weak symbol](https://en.wikipedia.org/wiki/Weak_symbol) `__module_abi__`.
 
 
 ## API

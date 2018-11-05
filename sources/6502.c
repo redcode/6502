@@ -25,11 +25,11 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 #	define CPU_6502_API Z_API_EXPORT
 #endif
 
-#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
-#	ifndef CPU_6502_USE_ABI
-#		define CPU_6502_USE_ABI
-#	endif
+#if defined(CPU_6502_WITH_MODULE_ABI) && !defined(CPU_6502_WITH_ABI)
+#	define CPU_6502_WITH_ABI
+#endif
 
+#ifdef CPU_6502_WITH_ABI 
 #	if defined(CPU_6502_HIDE_ABI)
 #		define CPU_6502_ABI static
 #	elif defined(CPU_6502_STATIC)
@@ -881,7 +881,7 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 /* MARK: - ABI */
 
-#if defined(CPU_6502_BUILD_ABI) || defined(CPU_6502_BUILD_MODULE_ABI)
+#ifdef CPU_6502_WITH_ABI
 
 	static ZCPUEmulatorExport const exports[5] = {
 		{Z_EMULATOR_FUNCTION_POWER, {(void (*)(void))m6502_power}},
@@ -910,7 +910,7 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 #endif
 
-#if defined(CPU_6502_BUILD_MODULE_ABI)
+#ifdef CPU_6502_WITH_MODULE_ABI
 
 #	include <Z/ABIs/generic/module.h>
 

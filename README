@@ -52,16 +52,6 @@ Code configuration
     don't want  to use Z,  you can  provide your own  header with the  types and
     macros used by the emulator.
 
-  CPU_6502_BUILD_ABI
-    Builds the generic CPU emulator ABI.
-
-  CPU_6502_BUILD_MODULE_ABI
-    Builds the generic  module ABI. This macro  also enables CPU_6502_BUILD_ABI,
-    so the generic CPU  emulator ABI will be built too.  This option is intended
-    to be  used when building a  true module loadable at  runtime with dlopen(),
-    LoadLibrary() or similar. The ABI module can be accessed via the weak symbol
-    __module_abi__.
-
   CPU_6502_HIDE_ABI
     Makes the generic CPU emulator ABI private.
 
@@ -72,16 +62,23 @@ Code configuration
     You need to define  this to compile or use the emulator  as a static library
     or if you have added 6502.h and 6502.c to your project.
 
-  CPU_6502_USE_ABI
-    Tells 6502.h to declare the prototype of the generic CPU emulator ABI.
-
   CPU_6502_USE_LOCAL_HEADER
     Use this if you have imported 6502.h and 6502.c to your project. 6502.c will
     #include "6502.h" instead of <emulation/CPU/6502.h>.
 
+  CPU_6502_WITH_ABI
+    Builds the generic CPU emulator ABI and declares its prototype in 6502.h.
 
-Use in Non-Free / Proprietary Software
-======================================
+  CPU_6502_BUILD_MODULE_ABI
+    Builds the generic  module ABI. This macro  also enables CPU_6502_BUILD_ABI,
+    so the generic CPU  emulator ABI will be built too.  This option is intended
+    to be  used when building a  true module loadable at  runtime with dlopen(),
+    LoadLibrary() or similar. The ABI module can be accessed via the weak symbol
+    __module_abi__.
+
+
+Use in Proprietary Software
+===========================
 
   This library is released under the terms of the GNU General Public License v3,
-  but I can license it for non-free projects if you contact me.
+  but I can license it for non-free/propietary projects if you contact me.
