@@ -164,10 +164,10 @@ EA_READER(zero_page_x)	 {EA_CYCLES = 4; return READ_8(ZERO_PAGE_X_ADDRESS     );
 EA_READER(zero_page_y)	 {EA_CYCLES = 4; return READ_8(ZERO_PAGE_Y_ADDRESS     );}
 EA_READER(absolute)	 {EA_CYCLES = 4; return READ_8(ABSOLUTE_ADDRESS	       );}
 EA_READER(indirect_x)	 {EA_CYCLES = 6; return READ_8(INDIRECT_X_ADDRESS      );}
-EA_READER(g_zero_page)   {EA_CYCLES = 5; return READ_8(EA = ZERO_PAGE_ADDRESS  );}
+EA_READER(g_zero_page)	 {EA_CYCLES = 5; return READ_8(EA = ZERO_PAGE_ADDRESS  );}
 EA_READER(g_zero_page_x) {EA_CYCLES = 6; return READ_8(EA = ZERO_PAGE_X_ADDRESS);}
-EA_READER(g_absolute)    {EA_CYCLES = 6; return READ_8(EA = ABSOLUTE_ADDRESS   );}
-EA_READER(g_absolute_x)  {EA_CYCLES = 7; return READ_8(EA = ABSOLUTE_X_ADDRESS );}
+EA_READER(g_absolute)	 {EA_CYCLES = 6; return READ_8(EA = ABSOLUTE_ADDRESS   );}
+EA_READER(g_absolute_x)	 {EA_CYCLES = 7; return READ_8(EA = ABSOLUTE_X_ADDRESS );}
 
 
 EA_READER(penalized_absolute_x)
@@ -273,11 +273,11 @@ static WriteEA const write_k_table[8] = {
 |-----+---------------+-------+-------+-------+-------+-------+-------+-------+-------|
 | 011 | Absolute      |   6   |   6   |   6   |   6   |   4   |   4   |   6   |   6   |
 |-----+---------------+-------+-------+-------+-------+-------+-------+-------+-------|
-| 100 |		      |	      |       |       |       |       |       |       |       |
+| 100 |		      |       |       |       |       |       |       |       |       |
 |-----+---------------+-------+-------+-------+-------+-------+-------+-------+-------|
 | 101 | Zero Page,X/Y |  6/x  |  6/x  |  6/x  |  6/x  |  4/y  |  4/y  |   6   |   6   |
 |-----+---------------+-------+-------+-------+-------+-------+-------+-------+-------|
-| 110 |		      |	      |       |       |       |       |       |       |       |
+| 110 |		      |       |       |       |       |       |       |       |       |
 |-----+---------------+-------+-------+-------+-------+-------+-------+-------+-------|
 | 111 | Absolute,X/Y  |   7   |   7   |   7   |   7   |       | 4+1/y |   7   |   7   |
 '------------------------------------------------------------------------------------*/
