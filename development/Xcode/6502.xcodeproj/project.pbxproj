@@ -10,9 +10,9 @@
 		6428A5751AAFC6DF00634F5D /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6428A5771AAFC72900634F5D /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; };
 		6428A5801AAFEF1D00634F5D /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_STATIC"; }; };
-		648C13E91CCE375600C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_BUILD_MODULE_ABI"; }; };
+		648C13E91CCE375600C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_WITH_MODULE_ABI"; }; };
 		648C13EC1CCE375600C8DCE1 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		648C13F31CCE376800C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_STATIC -DCPU_6502_BUILD_ABI"; }; };
+		648C13F31CCE376800C8DCE1 /* 6502.c in Sources */ = {isa = PBXBuildFile; fileRef = 6428A5761AAFC72900634F5D /* 6502.c */; settings = {COMPILER_FLAGS = "-DCPU_6502_STATIC -DCPU_6502_WITH_ABI"; }; };
 		64F8E3391CD6575D0083A613 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		64F8E33A1CD6575E0083A613 /* 6502.h in Headers */ = {isa = PBXBuildFile; fileRef = 6428A5741AAFC6DF00634F5D /* 6502.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -22,7 +22,7 @@
 		6428A5741AAFC6DF00634F5D /* 6502.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = 6502.h; sourceTree = "<group>"; };
 		6428A5761AAFC72900634F5D /* 6502.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = 6502.c; sourceTree = "<group>"; };
 		6428A57C1AAFEDED00634F5D /* lib6502.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = lib6502.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		648C13F01CCE375600C8DCE1 /* 6502.CPU */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = 6502.CPU; sourceTree = BUILT_PRODUCTS_DIR; };
+		648C13F01CCE375600C8DCE1 /* lib6502.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = lib6502.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		648C13F91CCE376800C8DCE1 /* lib6502.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = lib6502.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -72,7 +72,7 @@
 			children = (
 				6428A5691AAFC68700634F5D /* lib6502.dylib */,
 				6428A57C1AAFEDED00634F5D /* lib6502.a */,
-				648C13F01CCE375600C8DCE1 /* 6502.CPU */,
+				648C13F01CCE375600C8DCE1 /* lib6502.dylib */,
 				648C13F91CCE376800C8DCE1 /* lib6502.a */,
 			);
 			name = Products;
@@ -182,7 +182,7 @@
 			);
 			name = "6502 (dynamic module)";
 			productName = 6502;
-			productReference = 648C13F01CCE375600C8DCE1 /* 6502.CPU */;
+			productReference = 648C13F01CCE375600C8DCE1 /* lib6502.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		648C13F11CCE376800C8DCE1 /* 6502 (static moduleI) */ = {
@@ -391,8 +391,8 @@
 		6428A56E1AAFC68700634F5D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1.0.0;
+				DYLIB_COMPATIBILITY_VERSION = 0;
+				DYLIB_CURRENT_VERSION = 0.1.0;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = 6502;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/emulation/CPU;
@@ -402,8 +402,8 @@
 		6428A56F1AAFC68700634F5D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1.0.0;
+				DYLIB_COMPATIBILITY_VERSION = 0;
+				DYLIB_CURRENT_VERSION = 0.1.0;
 				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = 6502;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/emulation/CPU;
@@ -429,12 +429,9 @@
 		648C13EE1CCE375600C8DCE1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1.0.0;
-				DYLIB_INSTALL_NAME_BASE = "";
-				EXECUTABLE_EXTENSION = CPU;
-				INSTALL_PATH = /usr/local/lib/modules/emulation/CPU;
-				LD_DYLIB_INSTALL_NAME = "$(EXECUTABLE_PATH)";
+				DYLIB_COMPATIBILITY_VERSION = 0;
+				DYLIB_CURRENT_VERSION = 0.1.0;
+				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = 6502;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/emulation/CPU;
 			};
@@ -443,12 +440,9 @@
 		648C13EF1CCE375600C8DCE1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1.0.0;
-				DYLIB_INSTALL_NAME_BASE = "";
-				EXECUTABLE_EXTENSION = CPU;
-				INSTALL_PATH = /usr/local/lib/modules/emulation/CPU;
-				LD_DYLIB_INSTALL_NAME = "$(EXECUTABLE_PATH)";
+				DYLIB_COMPATIBILITY_VERSION = 0;
+				DYLIB_CURRENT_VERSION = 0.1.0;
+				EXECUTABLE_PREFIX = lib;
 				PRODUCT_NAME = 6502;
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/emulation/CPU;
 			};
