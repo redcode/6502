@@ -70,16 +70,21 @@ typedef struct {
 
 	Z6502State state;
 
-	/** Temporary storage for memory addressing mode selection.
+	/** Temporary storage for memory address resolution.
 	  * @details This is an internal private variable. */
 
 	zuint8 opcode;
 
-	/** Temporary storage for memory addressing.
+	/** Temporary storage for the number of cycles consumed by instructions
+	  * requiring memory address resolution.
+	  * @details This is an internal private variable. */
+
+	zuint8 ea_cycles;
+
+	/** Temporary storage for the resolved memory address.
 	  * @details This is an internal private variable. */
 
 	zuint16 ea;
-	zuint8  ea_cycles;
 } M6502;
 
 Z_C_SYMBOLS_BEGIN
