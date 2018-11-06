@@ -26,7 +26,7 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 #	include <Z/hardware/CPU/architecture/6502.h>
 #endif
 
-/** 6502 emulator instance object.
+/** 6502 emulator instance.
   * @details This structure contains the state of the emulated CPU and callback
   * pointers necessary to interconnect the emulator with external logic. There
   * is no constructor function, so, before using an object of this type, some
@@ -98,19 +98,19 @@ Z_C_SYMBOLS_BEGIN
 #endif
 
 /** Changes the CPU power status.
-  * @param object A pointer to a 6502 emulator instance object.
+  * @param object A pointer to a 6502 emulator instance.
   * @param state @c TRUE = power ON; @c FALSE = power OFF. */
 
 CPU_6502_API void m6502_power(M6502 *object, zboolean state);
 
 /** Resets the CPU.
   * @details This is equivalent to a pulse in the RESET line of a real 6502.
-  * @param object A pointer to a 6502 emulator instance object. */
+  * @param object A pointer to a 6502 emulator instance. */
 
 CPU_6502_API void m6502_reset(M6502 *object);
 
 /** Runs the CPU for a given number of @p cycles.
-  * @param object A pointer to a 6502 emulator instance object.
+  * @param object A pointer to a 6502 emulator instance.
   * @param cycles The number of cycles to be executed.
   * @return The number of cycles executed.
   * @note Given the fact that one 6502 instruction needs between 2 and 7 cycles
@@ -121,13 +121,13 @@ CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles);
 
 /** Performs a non-maskable interrupt (NMI).
   * @details This is equivalent to a pulse in the NMI line of a real 6502.
-  * @param object A pointer to a 6502 emulator instance object. */
+  * @param object A pointer to a 6502 emulator instance. */
 
 CPU_6502_API void m6502_nmi(M6502 *object);
 
 /** Changes the state of the maskable interrupt (IRQ).
   * @details This is equivalent to a change in the IRQ line of a real 6502.
-  * @param object A pointer to a 6502 emulator instance object.
+  * @param object A pointer to a 6502 emulator instance.
   * @param state @c TRUE = line high; @c FALSE = line low. */
 
 CPU_6502_API void m6502_irq(M6502 *object, zboolean state);
