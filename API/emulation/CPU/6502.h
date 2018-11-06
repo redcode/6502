@@ -104,7 +104,7 @@ Z_C_SYMBOLS_BEGIN
 CPU_6502_API void m6502_power(M6502 *object, zboolean state);
 
 /** Resets the CPU.
-  * @details This is equivalent to a pulse in the RESET line of a real 6502.
+  * @details This is equivalent to a pulse on the RESET line of a real 6502.
   * @param object A pointer to a 6502 emulator instance. */
 
 CPU_6502_API void m6502_reset(M6502 *object);
@@ -120,13 +120,13 @@ CPU_6502_API void m6502_reset(M6502 *object);
 CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles);
 
 /** Performs a non-maskable interrupt (NMI).
-  * @details This is equivalent to a pulse in the NMI line of a real 6502.
+  * @details This is equivalent to a pulse on the NMI line of a real 6502.
   * @param object A pointer to a 6502 emulator instance. */
 
 CPU_6502_API void m6502_nmi(M6502 *object);
 
 /** Changes the state of the maskable interrupt (IRQ).
-  * @details This is equivalent to a change in the IRQ line of a real 6502.
+  * @details This is equivalent to a change on the IRQ line of a real 6502.
   * @param object A pointer to a 6502 emulator instance.
   * @param state @c TRUE = line high; @c FALSE = line low. */
 
