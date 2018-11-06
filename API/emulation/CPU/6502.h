@@ -36,10 +36,10 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 typedef struct {
 
 	/** Number of cycles executed in the current call to @c m6502_run.
-	  * @details @c m6502_run sets this variable to 0 before starting to
-	  * execute instructions and its value persists after returning. The
-	  * callbacks can use this variable to know during what cycle they are
-	  * being called. */
+	  * @details @c m6502_run sets this variable to @c 0 before starting
+	  * to execute instructions and its value persists after returning.
+	  * The callbacks can use this variable to know during what cycle
+	  * they are being called. */
 
 	zusize cycles;
 
