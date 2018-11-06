@@ -71,7 +71,7 @@ Code configuration
 
   CPU_6502_WITH_MODULE_ABI
     Builds the generic module ABI. This macro also enables CPU_6502_WITH_ABI, so
-    the generic CPU emulator  ABI will be built too. This  option is intended to
+    the generic CPU emulator  ABI will be built too.  This option is intended to
     be  used when  building a  true module  loadable at  runtime with  dlopen(),
     LoadLibrary() or similar. The ABI module can be accessed via the weak symbol
     __module_abi__.
