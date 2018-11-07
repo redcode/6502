@@ -853,11 +853,6 @@ CPU_6502_API zusize m6502_run(M6502 *object, zusize cycles)
 			PC = READ_POINTER(IRQ);
 			P |= IP;
 			CYCLES += 7;
-
-#			ifdef CPU_6502_AUTOCLEAR_IRQ_LINE
-				IRQ = FALSE;
-#			endif
-
 			continue;
 			}
 
