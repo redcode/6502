@@ -39,7 +39,7 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 #	endif
 #endif
 
-#if defined(CPU_6502_USE_LOCAL_HEADER)
+#ifdef CPU_6502_USE_LOCAL_HEADER
 #	include "6502.h"
 #else
 #	include <emulation/CPU/6502.h>
@@ -908,7 +908,9 @@ CPU_6502_API void m6502_irq(M6502 *object, zboolean state) {IRQ = state;}
 
 #ifdef CPU_6502_WITH_MODULE_ABI
 
-#	include <Z/ABIs/generic/module.h>
+#	ifndef CPU_6502_DEPENDENCIES_H
+#		include <Z/ABIs/generic/module.h>
+#	endif
 
 	static ZModuleUnit const unit = {"6502", "6502", Z_VERSION(0, 1, 0), &abi_emulation_cpu_6502};
 	static ZModuleDomain const domain = {"Emulation.CPU", Z_VERSION(1, 0, 0), 1, &unit};

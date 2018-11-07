@@ -41,7 +41,7 @@ There are some predefined macros that control the compilation:
 
 Name | Description
 --- | ---
-`CPU_6502_DEPENDENCIES_H` | If defined, `6502.h` will `#include` only this header as dependency. If you don't want to use Z, you can provide your own header with the types and macros used by the emulator.
+`CPU_6502_DEPENDENCIES_H` | If defined, it replaces the inclusion of any external header with this one. If you don't want to use Z, you can provide your own header with the types and macros used by the emulator.
 `CPU_6502_HIDE_ABI` | Makes the generic CPU emulator ABI private.
 `CPU_6502_HIDE_API` | Makes the public functions private.
 `CPU_6502_STATIC` | You need to define this to compile or use the emulator as a static library or if you have added `6502.h` and `6502.c` to your project.
