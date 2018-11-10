@@ -1,8 +1,8 @@
 /*   ____  ______  ______   ____
-    /  _/_/\  __/_/\     \ /\_, \
-   /\  __ \ \___  \ \  \  \\//  /__
+    /  _/_/\  __/_/\  __ \ /\_, \
+   /\  __ \ \___  \ \ \/\ \\//  /__
    \ \_____\/\____/\ \_____\/\_____\
-MOS \/_____/\/___/  \/_____/\/_____/ CPU Emulator
+MOS \/_____/\/___/  \/_____/\/_____/ CPU Emulator ----------------------------
 Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 
 This emulator is free software: you can redistribute it and/or modify it under
@@ -15,7 +15,8 @@ ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received  a copy of the GNU General Public License  along with
-this emulator. If not, see <http://www.gnu.org/licenses/>. */
+this emulator. If not, see <http://www.gnu.org/licenses/>.
+--------------------------------------------------------------------------- */
 
 #if defined(CPU_6502_HIDE_API)
 #	define CPU_6502_API static
@@ -29,7 +30,7 @@ this emulator. If not, see <http://www.gnu.org/licenses/>. */
 #	define CPU_6502_WITH_ABI
 #endif
 
-#ifdef CPU_6502_WITH_ABI 
+#ifdef CPU_6502_WITH_ABI
 #	if defined(CPU_6502_HIDE_ABI)
 #		define CPU_6502_ABI static
 #	elif defined(CPU_6502_STATIC)
@@ -801,7 +802,7 @@ CPU_6502_API void m6502_power(M6502 *object, zboolean state)
 		Y  = Z_6502_VALUE_AFTER_POWER_ON_Y;
 		IRQ = NMI = FALSE;
 		}
-	
+
 	else PC = S = P = A = X = Y = IRQ = NMI = 0;
 	}
 

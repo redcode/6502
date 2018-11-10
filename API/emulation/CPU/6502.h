@@ -1,8 +1,8 @@
 /*   ____  ______  ______   ____
-    /  _/_/\  __/_/\     \ /\_, \
-   /\  __ \ \___  \ \  \  \\//  /__
+    /  _/_/\  __/_/\  __ \ /\_, \
+   /\  __ \ \___  \ \ \/\ \\//  /__
    \ \_____\/\____/\ \_____\/\_____\
-MOS \/_____/\/___/  \/_____/\/_____/ CPU Emulator
+MOS \/_____/\/___/  \/_____/\/_____/ CPU Emulator ----------------------------
 Copyright (C) 1999-2018 Manuel Sainz de Baranda y Goñi.
 
 This emulator is free software: you can redistribute it and/or modify it under
@@ -15,7 +15,8 @@ ANY WARRANTY; without even the  implied warranty of MERCHANTABILITY or FITNESS
 FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received  a copy of the GNU General Public License  along with
-this emulator. If not, see <http://www.gnu.org/licenses/>. */
+this emulator. If not, see <http://www.gnu.org/licenses/>.
+--------------------------------------------------------------------------- */
 
 #ifndef _emulation_CPU_6502_H_
 #define _emulation_CPU_6502_H_
