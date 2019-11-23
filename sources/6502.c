@@ -1,3 +1,4 @@
+/* vim: set tabstop=8 noexpandtab: */
 /*   ____  ______  ______   ____
     /  _/_/\  __/_/\  __ \ /\_, \
    /\  __ \ \___  \ \ \/\ \\//  /__
@@ -762,7 +763,7 @@ INSTRUCTION(brk)
 	}
 
 
-INSTRUCTION(illegal) {return 2;}
+INSTRUCTION(illegal) {(void)object;	return 2;}
 
 
 /* MARK: - Instruction Function Table */
