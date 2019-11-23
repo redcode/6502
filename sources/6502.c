@@ -763,7 +763,7 @@ INSTRUCTION(brk)
 	}
 
 
-INSTRUCTION(illegal) {return 2;}
+INSTRUCTION(illegal) {(void)object;	return 2;}
 
 
 /* MARK: - Instruction Function Table */
