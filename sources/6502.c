@@ -763,10 +763,9 @@ INSTRUCTION(brk)
 	}
 
 
-INSTRUCTION(illegal) {(void)object;	return 2;}
-
-
 /* MARK: - Instruction Function Table */
+
+#define illegal nop
 
 static Instruction const instruction_table[256] = {
 /* 	0	    1	   2	    3	     4	      5	     6	    7	     8	  9	   A	    B	     C		D      E	F */
