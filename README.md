@@ -14,7 +14,7 @@ If you are looking for a MOS 6502 CPU emulator for your project maybe you have f
 
 ## Building
 
-You must first install [Z](http://zeta.st), a **header-only** library that provides types and macros. This is the only dependency, the emulator does not use the C standard library or its headers. Then add `6502.h` and `6502.c` to your project and configure its build system so that `CPU_6502_STATIC` and `CPU_6502_USE_LOCAL_HEADER` are predefined when compiling the sources.
+You must first install [Z](https://github.com/redcode/Z), a **header-only** library that provides types and macros. This is the only dependency, the emulator does not use the C standard library or its headers. Then add `6502.h` and `6502.c` to your project and configure its build system so that `CPU_6502_STATIC` and `CPU_6502_USE_LOCAL_HEADER` are predefined when compiling the sources.
 
 If you preffer to build the emulator as a library, you can use [premake4](http://premake.github.io):
 ```console
