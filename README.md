@@ -180,9 +180,3 @@ This is equivalent to a change on the `IRQ` line of a real 6502.
 **Parameters**  
 `object` → A pointer to a 6502 emulator instance.  
 `state` → `TRUE` = line high; `FALSE` = line low.  
-
-<br>
-
-## Use in Proprietary Software
-
-This library is released under the terms of the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.html) as published by the [Free Software Foundation](https://www.fsf.org).
