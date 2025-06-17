@@ -1,0 +1,34 @@
+﻿/* IMPORTANT: This file MUST be saved using the "UTF-8 with BOM" encoding. */
+
+1 VERSIONINFO
+	FILEVERSION    @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,0
+	PRODUCTVERSION @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,@PROJECT_VERSION_PATCH@,0
+	FILEFLAGSMASK  0x3FL
+#ifdef NDEBUG
+	FILEFLAGS 0x0L
+#else
+	FILEFLAGS 0x1L
+#endif
+	FILEOS      0x4L
+	FILETYPE    0x1L
+	FILESUBTYPE 0x0L
+BEGIN
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040904B0"
+		BEGIN
+			VALUE "CompanyName",      "Manuel Sainz de Baranda y Goñi"
+			VALUE "FileDescription",  "@PROJECT_DESCRIPTION@"
+			VALUE "FileVersion",      "@PROJECT_VERSION@"
+			VALUE "InternalName",     "@PROJECT_NAME@"
+			VALUE "LegalCopyright",   "Copyright © 1999-2025 Manuel Sainz de Baranda y Goñi"
+			VALUE "OriginalFilename", "@PROJECT_NAME@.dll"
+			VALUE "ProductName",      "@PROJECT_NAME@"
+			VALUE "ProductVersion",   "@PROJECT_VERSION@"
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x409, 1200
+	END
+END
