@@ -1,3 +1,5 @@
 .directory
 .DS_Store
 Thumbs.db
+/build/
+/CMakeLists.txt.user
