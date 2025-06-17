@@ -4,7 +4,7 @@
 
 # MOS Technology 6502 CPU Emulator
 Copyright © 1999-2025 Manuel Sainz de Baranda y Goñi.  
-Released under the terms of the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
+Released under the terms of the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.html).
 
 This is a very accurate [6502](http://en.wikipedia.org/wiki/MOS_Technology_6502) [emulator](http://en.wikipedia.org/wiki/Emulator) I wrote many years ago. It has been used in several machine emulators by other people and it has been extensivelly tested. It is fast, small (17 KB when compiled as a x86-64 dynamic library), easy to understand, and the code is commented.
 
