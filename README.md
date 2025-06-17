@@ -3,7 +3,7 @@
 <br>
 
 # MOS Technology 6502 CPU Emulator
-Copyright © 1999-2018 Manuel Sainz de Baranda y Goñi.  
+Copyright © 1999-2025 Manuel Sainz de Baranda y Goñi.  
 Released under the terms of the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html).
 
 This is a very accurate [6502](http://en.wikipedia.org/wiki/MOS_Technology_6502) [emulator](http://en.wikipedia.org/wiki/Emulator) I wrote many years ago. It has been used in several machine emulators by other people and it has been extensivelly tested. It is fast, small (17 KB when compiled as a x86-64 dynamic library), easy to understand, and the code is commented.
@@ -184,4 +184,5 @@ This is equivalent to a change on the `IRQ` line of a real 6502.
 <br>
 
 ## Use in Proprietary Software
-This library is released under the terms of the [GNU General Public License v3](http://www.gnu.org/copyleft/gpl.html), but I can license it for non-free/propietary projects if you contact [me](mailto:contact@zxe.io?subject=6502%20non-free%20licensing).
+
+This library is released under the terms of the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-3.0.html) as published by the [Free Software Foundation](https://www.fsf.org).
